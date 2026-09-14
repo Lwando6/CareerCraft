@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCraft - Resume Templates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <!-- Unified Header -->
+    <header class="bg-blue-950 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <a href="index.html" class="flex items-center space-x-3 transition hover:opacity-80">
+                    <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center text-blue-950">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M3 7a2 2 0 0 1 2-2h3V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7zm7-1h4V4h-4v2zM5 9v9h14V9H5z" />
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-black tracking-wide text-white">Career<span class="text-amber-500">Craft</span></span>
+                </a>
+                <nav class="hidden xl:flex items-center space-x-5 text-sm">
+                    <a href="index.html" class="text-gray-300 hover:text-white font-medium transition">Home</a>
+                    <a href="resumes.html" class="text-amber-500 font-bold transition">Templates</a>
+                    <a href="tech-resume.html" class="text-gray-300 hover:text-white font-medium transition">Tech CV</a>
+                    <a href="portfolio.html" class="text-gray-300 hover:text-white font-medium transition">Portfolio</a>
+                    <a href="pricing.html" class="text-gray-300 hover:text-white font-medium transition">Pricing</a>
+                    <a href="prompts.html" class="text-gray-300 hover:text-white font-medium transition">AI Prompts</a>
+                    <a href="linkedin.html" class="text-gray-300 hover:text-white font-medium transition">LinkedIn</a>
+                    <a href="mission.html" class="text-gray-300 hover:text-white font-medium transition">Mission</a>
+                </nav>
+                <div class="flex items-center space-x-3">
+                    <a id="navLoginLink" href="login.html" class="text-gray-300 hover:text-white font-medium text-sm transition">Log In</a>
+                    <a id="navSignupLink" href="signup.html" class="bg-amber-500 hover:bg-amber-400 text-blue-950 font-bold text-sm px-5 py-2.5 rounded-lg transition shadow-md">Get Started</a>
+                    <a id="navProfileLink" href="profile.html" class="hidden text-gray-300 hover:text-white font-medium text-sm transition">Profile</a>
+                    <button id="navLogoutButton" type="button" class="hidden bg-white/10 hover:bg-white/20 text-white font-medium text-sm px-4 py-2 rounded-lg transition">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="mb-12 border-b border-gray-200 pb-8">
+            <span class="text-amber-600 font-bold text-xs uppercase tracking-widest">Industry Specific</span>
+            <h1 class="text-4xl font-extrabold text-blue-950 mt-2">10 Professional Resume Layouts</h1>
+            <p class="text-gray-600 text-lg mt-3 max-w-3xl">Clean, ATS-compliant formats tested against corporate hiring filters.</p>
+        </div>
+
+        <div id="selectedTemplatePanel" class="mb-8"></div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div data-template-card data-template-name="Corporate Accountant" data-template-category="Finance" data-template-description="IFRS compliance, financial modeling, and Excel analysis." class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                    <span class="bg-blue-50 text-blue-900 text-xs font-bold px-3 py-1 rounded-full uppercase">Finance</span>
+                    <h3 class="text-xl font-bold text-blue-950 mt-4">Corporate Accountant</h3>
+                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">Emphasizes IFRS compliance, financial modeling, Sage Pastel, and advanced Excel analysis.</p>
+                </div>
+                <button data-template-action type="button" class="mt-6 w-full text-center bg-blue-950 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-900 transition">View Template</button>
+            </div>
+
+            <div data-template-card data-template-name="Network Engineer" data-template-category="Engineering" data-template-description="Cisco configs, OSPF, VLANs, and technical clarity." class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                    <span class="bg-amber-50 text-amber-700 text-xs font-bold px-3 py-1 rounded-full uppercase">Engineering</span>
+                    <h3 class="text-xl font-bold text-blue-950 mt-4">Network Engineer</h3>
+                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">Built for technical clarity: Cisco configs, OSPF, VLANs, and Packet Tracer topology design.</p>
+                </div>
+                <button data-template-action type="button" class="mt-6 w-full text-center bg-blue-950 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-900 transition">View Template</button>
+            </div>
+
+            <div data-template-card data-template-name="Electrical Artisan" data-template-category="Trades" data-template-description="Safety compliance, preventative maintenance, and trade readiness." class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                    <span class="bg-gray-100 text-gray-700 text-xs font-bold px-3 py-1 rounded-full uppercase">Trades</span>
+                    <h3 class="text-xl font-bold text-blue-950 mt-4">Electrical Artisan</h3>
+                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">Focuses on safety compliance, preventative maintenance, trade test readiness, and practical skills.</p>
+                </div>
+                <button data-template-action type="button" class="mt-6 w-full text-center bg-blue-950 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-900 transition">View Template</button>
+            </div>
+
+            <div data-template-card data-template-name="Registered Nurse" data-template-category="Healthcare" data-template-description="Clinical rotations, patient protocols, and triage management." class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                    <span class="bg-blue-50 text-blue-900 text-xs font-bold px-3 py-1 rounded-full uppercase">Healthcare</span>
+                    <h3 class="text-xl font-bold text-blue-950 mt-4">Registered Nurse</h3>
+                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">Highlights clinical rotations, patient protocols, triage management, and record accuracy.</p>
+                </div>
+                <button data-template-action type="button" class="mt-6 w-full text-center bg-blue-950 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-900 transition">View Template</button>
+            </div>
+
+            <div data-template-card data-template-name="UI/UX Designer" data-template-category="Design" data-template-description="Figma wireframing, UX strategy, and interface design." class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                    <span class="bg-amber-50 text-amber-700 text-xs font-bold px-3 py-1 rounded-full uppercase">Design</span>
+                    <h3 class="text-xl font-bold text-blue-950 mt-4">UI/UX Designer</h3>
+                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">Balanced layout detailing Figma wireframing, user journey mapping, and interface strategy.</p>
+                </div>
+                <button data-template-action type="button" class="mt-6 w-full text-center bg-blue-950 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-900 transition">View Template</button>
+            </div>
+
+            <div data-template-card data-template-name="HR Administrator" data-template-category="Human Resources" data-template-description="Recruitment coordination, onboarding, and CCMA compliance." class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                    <span class="bg-gray-100 text-gray-700 text-xs font-bold px-3 py-1 rounded-full uppercase">Human Resources</span>
+                    <h3 class="text-xl font-bold text-blue-950 mt-4">HR Administrator</h3>
+                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">Focuses on CCMA compliance, recruitment coordination, wellness programs, and onboarding.</p>
+                </div>
+                <button data-template-action type="button" class="mt-6 w-full text-center bg-blue-950 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-900 transition">View Template</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-blue-950 text-gray-400 py-8 text-center border-t border-blue-900 mt-auto">
+        <p class="text-sm">&copy; 2026 CareerCraft South Africa.</p>
+    </footer>
+    <script src="auth.js"></script>
+</body>
+</html>
