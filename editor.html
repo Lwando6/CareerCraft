@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCraft CV Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: Inter, system-ui, sans-serif; }
+        @media print {
+            body { background: white !important; }
+            .no-print { display: none !important; }
+            #resumePreview { box-shadow: none !important; border: 0 !important; margin: 0 !important; }
+            @page { size: A4; margin: 12mm; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 pb-20 xl:pb-0">
+    <header class="no-print sticky top-0 z-40 bg-blue-950 text-white shadow-lg">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+            <a href="index.html" class="text-xl font-black">Career<span class="text-amber-400">Craft</span></a>
+            <div class="flex gap-3">
+                <a href="resumes.html" class="rounded-lg px-4 py-2 text-sm font-semibold hover:bg-white/10">Change template</a>
+                <button id="saveResumeButton" class="rounded-lg bg-white/10 px-4 py-2 text-sm font-bold hover:bg-white/20">Save</button>
+                <button id="downloadResumeButton" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-bold text-blue-950 hover:bg-amber-400">
+                    <i class="fa-solid fa-download mr-2"></i>Download PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[380px_1fr]">
+        <aside class="no-print h-fit rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:sticky lg:top-24">
+            <p class="text-xs font-bold uppercase tracking-widest text-amber-700">CV builder</p>
+            <h1 class="mt-2 text-2xl font-black text-blue-950">Your information</h1>
+            <p id="editorTemplateName" class="mt-1 text-sm text-slate-500">Loading template…</p>
+            <form id="resumeForm" class="mt-6 space-y-4">
+                <label class="block text-sm font-bold">Full name
+                    <input name="fullName" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Your full name">
+                </label>
+                <label class="block text-sm font-bold">Professional headline
+                    <input name="headline" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Network Support Specialist">
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="block text-sm font-bold">Email
+                        <input name="email" type="email" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5">
+                    </label>
+                    <label class="block text-sm font-bold">Phone
+                        <input name="phone" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5">
+                    </label>
+                </div>
+                <label class="block text-sm font-bold">Location
+                    <input name="location" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Cape Town, South Africa">
+                </label>
+                <label class="block text-sm font-bold">Professional summary
+                    <textarea name="summary" rows="4" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Summarise your value, experience and goal."></textarea>
+                </label>
+                <label class="block text-sm font-bold">Skills
+                    <textarea name="skills" rows="3" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Separate skills with commas"></textarea>
+                </label>
+                <label class="block text-sm font-bold">Experience
+                    <textarea name="experience" rows="5" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Role — Organisation — Dates&#10;Achievement or responsibility"></textarea>
+                </label>
+                <label class="block text-sm font-bold">Education
+                    <textarea name="education" rows="4" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Qualification — Institution — Year"></textarea>
+                </label>
+            </form>
+            <div id="editorStatus" role="status" aria-live="polite" class="hidden"></div>
+            <p class="mt-5 text-xs leading-relaxed text-slate-500">Tip: keep your CV concise, quantify achievements, and tailor keywords to each role.</p>
+        </aside>
+
+        <section aria-label="Live resume preview">
+            <div class="no-print mb-3 flex items-center justify-between">
+                <p class="text-sm font-bold text-slate-600">Live A4 preview</p>
+                <span id="saveState" class="text-xs text-slate-500">Changes save when you click Save</span>
+            </div>
+            <article id="resumePreview" class="mx-auto min-h-[1120px] max-w-[794px] border border-slate-200 bg-white p-10 shadow-xl sm:p-14">
+                <header class="border-b-4 border-blue-950 pb-6">
+                    <p id="previewTemplate" class="text-xs font-bold uppercase tracking-[0.2em] text-amber-600">CareerCraft</p>
+                    <h2 id="previewName" class="mt-2 text-4xl font-black text-blue-950">Your Name</h2>
+                    <p id="previewHeadline" class="mt-1 text-xl font-bold text-blue-700">Professional Headline</p>
+                    <p id="previewContact" class="mt-4 text-sm text-slate-600">email@example.com · Cape Town</p>
+                </header>
+                <section class="mt-8">
+                    <h3 class="text-sm font-black uppercase tracking-widest text-blue-950">Professional summary</h3>
+                    <p id="previewSummary" class="mt-3 whitespace-pre-line leading-7 text-slate-700">Add a focused summary that explains the value you bring.</p>
+                </section>
+                <section class="mt-8">
+                    <h3 class="text-sm font-black uppercase tracking-widest text-blue-950">Core skills</h3>
+                    <div id="previewSkills" class="mt-3 flex flex-wrap gap-2"></div>
+                </section>
+                <section class="mt-8">
+                    <h3 class="text-sm font-black uppercase tracking-widest text-blue-950">Experience</h3>
+                    <p id="previewExperience" class="mt-3 whitespace-pre-line leading-7 text-slate-700">Add your experience and measurable achievements.</p>
+                </section>
+                <section class="mt-8">
+                    <h3 class="text-sm font-black uppercase tracking-widest text-blue-950">Education</h3>
+                    <p id="previewEducation" class="mt-3 whitespace-pre-line leading-7 text-slate-700">Add your qualifications and training.</p>
+                </section>
+            </article>
+        </section>
+    </main>
+    <script src="journey.js"></script>
+    <script type="module" src="resume-editor.js"></script>
+</body>
+</html>

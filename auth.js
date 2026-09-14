@@ -149,18 +149,29 @@ async function bindProfile(user) {
     try {
         const profile = await loadProfile(user);
         const template = profile.selected_template || readLocal(TEMPLATE_KEY);
-        const plan = profile.selected_plan || readLocal(PLAN_KEY);
+        const { data: subscription } = await supabase.from('subscriptions').select('plan_slug,status,current_period_end').eq('user_id', user.id).maybeSingle();
+        const chosenPlan = profile.selected_plan || readLocal(PLAN_KEY);
+        const plan = subscription?.status === 'active'
+            ? { name: subscription.plan_slug === 'pro' ? 'Pro' : 'Starter', price: `Active${subscription.current_period_end ? ` until ${new Date(subscription.current_period_end).toLocaleDateString()}` : ''}` }
+            : chosenPlan;
         document.getElementById('profileName').value = profile.full_name;
         document.getElementById('profileEmail').value = profile.email;
         document.getElementById('profileEmail').readOnly = true;
         document.getElementById('profileRole').value = profile.role;
         document.getElementById('profileBio').value = profile.bio;
         document.getElementById('profileLocation').value = profile.location;
+        const githubField = document.getElementById('profileGithub');
+        if (githubField) githubField.value = profile.github_username || '';
         document.getElementById('selectedTemplateSummary').textContent =
             template ? `${template.name} (${template.category})` : 'No template selected yet';
         document.getElementById('selectedPlanSummary').textContent =
             plan ? `${plan.name} — ${plan.price}` : 'No subscription selected yet';
         updateChecklist(profile, template, plan);
+        const { data: resumes } = await supabase.from('resumes').select('id,title,template_slug,updated_at').eq('user_id', user.id).order('updated_at', { ascending: false }).limit(6);
+        const resumeList = document.getElementById('savedResumes');
+        if (resumeList) resumeList.innerHTML = resumes?.length
+            ? resumes.map(resume => `<a href="editor.html?id=${encodeURIComponent(resume.id)}" class="rounded-xl border border-gray-200 p-4 transition hover:border-blue-400"><strong class="block text-blue-950">${escapeHTML(resume.title)}</strong><span class="mt-1 block text-xs text-gray-500">${escapeHTML(resume.template_slug.replaceAll('-', ' '))} · Updated ${new Date(resume.updated_at).toLocaleDateString()}</span></a>`).join('')
+            : '<p class="text-sm text-gray-500">No CVs saved yet. Choose a template to create your first one.</p>';
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -169,6 +180,7 @@ async function bindProfile(user) {
                 role: document.getElementById('profileRole').value.trim(),
                 bio: document.getElementById('profileBio').value.trim(),
                 location: document.getElementById('profileLocation').value.trim(),
+                github_username: document.getElementById('profileGithub')?.value.trim() || null,
                 selected_template: readLocal(TEMPLATE_KEY) || template,
                 selected_plan: readLocal(PLAN_KEY) || plan,
                 updated_at: new Date().toISOString()
@@ -188,6 +200,10 @@ async function bindProfile(user) {
     } catch (error) {
         showStatus(status, `Could not load your profile: ${error.message}`);
     }
+}
+
+function escapeHTML(value = '') {
+    return String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
 }
 
 function updateChecklist(profile, template, plan) {
@@ -235,32 +251,38 @@ function bindSelections(user) {
     document.querySelectorAll('[data-template-card]').forEach((card) => {
         card.querySelector('[data-template-action]')?.addEventListener('click', async () => {
             const value = {
+                slug: card.dataset.templateSlug,
                 name: card.dataset.templateName,
                 category: card.dataset.templateCategory,
                 description: card.dataset.templateDescription
             };
             writeLocal(TEMPLATE_KEY, value);
-            if (!user) return window.location.href = 'signup.html?next=profile.html&saved=template';
+            if (!user) return window.location.href = 'signup.html?next=editor.html&saved=template';
+            if (card.dataset.templateTier !== 'free') {
+                const { data: entitlement } = await supabase.from('subscriptions').select('status,current_period_end').eq('user_id', user.id).maybeSingle();
+                const active = entitlement?.status === 'active' && (!entitlement.current_period_end || new Date(entitlement.current_period_end) > new Date());
+                if (!active) return window.location.href = 'pricing.html?required=starter';
+            }
             await loadProfile(user);
             await supabase.from('profiles').update({
                 selected_template: value,
                 updated_at: new Date().toISOString()
             }).eq('user_id', user.id);
-            window.location.href = 'profile.html';
+            window.location.href = `editor.html?template=${encodeURIComponent(value.slug)}`;
         });
     });
 
     document.querySelectorAll('[data-plan-card]').forEach((card) => {
         card.querySelector('[data-plan-action]')?.addEventListener('click', async () => {
-            const value = { name: card.dataset.planName, price: card.dataset.planPrice };
+            const value = { slug: card.dataset.planSlug, name: card.dataset.planName, price: card.dataset.planPrice };
             writeLocal(PLAN_KEY, value);
-            if (!user) return window.location.href = 'signup.html?next=profile.html&saved=plan';
+            if (!user) return window.location.href = 'signup.html?next=checkout.html&saved=plan';
             await loadProfile(user);
             await supabase.from('profiles').update({
                 selected_plan: value,
                 updated_at: new Date().toISOString()
             }).eq('user_id', user.id);
-            window.location.href = 'profile.html';
+            window.location.href = value.slug === 'free' ? 'profile.html' : `checkout.html?plan=${value.slug}`;
         });
     });
 }
@@ -280,6 +302,13 @@ async function initialise() {
         );
     }
     updateAuthUI(user);
+    if (new URLSearchParams(window.location.search).has('required')) {
+        const panel = document.getElementById('selectedPlanPanel');
+        if (panel) {
+            panel.textContent = 'This template is included with Starter or Pro. Choose a plan to continue.';
+            panel.className = 'mb-8 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800';
+        }
+    }
     bindLogout();
     bindLogin();
     bindSignup();
@@ -291,3 +320,4 @@ supabase.auth.onAuthStateChange((_event, session) => updateAuthUI(session?.user 
 initialise();
 
 window.CareerCraftAuth = { supabase, currentUser };
+export { supabase, currentUser };
