@@ -22,6 +22,7 @@
                 <span class="text-2xl font-black tracking-wide text-blue-950">Career<span class="text-amber-500">Craft</span></span>
             </a>
             <h2 class="mt-6 text-2xl font-extrabold text-blue-950">Create your free account</h2>
+            <p class="mt-2 text-sm text-gray-600">Save your choices and build your profile in a few guided steps.</p>
         </div>
         <form id="signupForm" class="mt-8 space-y-6">
             <div class="space-y-4">
@@ -42,17 +43,18 @@
                     <input id="signupPassword" type="password" required class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-900 focus:border-blue-900 sm:text-sm mt-1" placeholder="••••••••">
                 </div>
             </div>
-            <div id="signupStatus" class="hidden"></div>
+            <div id="signupStatus" class="hidden" role="status" aria-live="polite"></div>
             <div>
                 <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-950 hover:bg-blue-900 focus:outline-none transition shadow-md">
                     Create Account
                 </button>
             </div>
             <div class="text-center mt-4 text-sm text-gray-600">
-                Already have an account? <a href="login.html" class="font-bold text-amber-600 hover:text-amber-700 transition">Log in here.</a>
+                Already have an account? <a href="login.html?next=profile.html" class="font-bold text-amber-600 hover:text-amber-700 transition">Log in here.</a>
             </div>
         </form>
     </div>
+    <script src="journey.js"></script>
     <script type="module" src="auth.js"></script>
 </body>
 </html>
