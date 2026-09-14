@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCraft - Live GitHub Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <header class="bg-blue-950 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <a href="index.html" class="flex items-center space-x-3 transition hover:opacity-80">
+                    <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center text-blue-950">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M3 7a2 2 0 0 1 2-2h3V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7zm7-1h4V4h-4v2zM5 9v9h14V9H5z" />
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-black tracking-wide text-white">Career<span class="text-amber-500">Craft</span></span>
+                </a>
+                <nav class="hidden xl:flex items-center space-x-5 text-sm">
+                    <a href="index.html" class="text-gray-300 hover:text-white font-medium transition">Home</a>
+                    <a href="resumes.html" class="text-gray-300 hover:text-white font-medium transition">Templates</a>
+                    <a href="tech-resume.html" class="text-gray-300 hover:text-white font-medium transition">Tech CV</a>
+                    <a href="portfolio.html" class="text-amber-500 font-bold transition">Portfolio</a>
+                    <a href="pricing.html" class="text-gray-300 hover:text-white font-medium transition">Pricing</a>
+                    <a href="prompts.html" class="text-gray-300 hover:text-white font-medium transition">AI Prompts</a>
+                    <a href="linkedin.html" class="text-gray-300 hover:text-white font-medium transition">LinkedIn</a>
+                    <a href="mission.html" class="text-gray-300 hover:text-white font-medium transition">Mission</a>
+                </nav>
+                <div class="flex items-center space-x-3">
+                    <a href="login.html" class="text-gray-300 hover:text-white font-medium text-sm transition">Log In</a>
+                    <a href="signup.html" class="bg-amber-500 hover:bg-amber-400 text-blue-950 font-bold text-sm px-5 py-2.5 rounded-lg transition shadow-md">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+        <div class="mb-10 text-center">
+            <h1 class="text-4xl font-extrabold text-blue-950">Live Technical Portfolio Integration</h1>
+            <p class="text-gray-600 text-lg mt-3 max-w-2xl mx-auto">Connecting directly to GitHub REST API to showcase real, verifiable projects.</p>
+        </div>
+
+        <div id="github-repos" class="grid md:grid-cols-2 gap-6">
+            <div class="col-span-2 text-center py-12">
+                <i class="fa-solid fa-spinner fa-spin text-3xl text-amber-500 mb-4"></i>
+                <p class="text-gray-500 font-medium">Fetching live repositories from GitHub...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const githubUsername = 'octocat'; 
+        
+        fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=4`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('github-repos');
+                container.innerHTML = '';
+
+                data.forEach(repo => {
+                    const repoCard = `
+                        <div class="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <h3 class="font-bold text-lg text-blue-950">${repo.name}</h3>
+                                    <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">${repo.language || 'Code'}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-6 leading-relaxed">${repo.description || 'Live public engineering repository.'}</p>
+                            </div>
+                            <a href="${repo.html_url}" target="_blank" class="inline-flex items-center text-sm font-bold text-blue-700 hover:text-blue-900 transition">
+                                View Source Code <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                            </a>
+                        </div>
+                    `;
+                    container.innerHTML += repoCard;
+                });
+            })
+            .catch(() => {
+                document.getElementById('github-repos').innerHTML = '<p class="text-red-500 text-center col-span-2">Unable to load live projects at this moment.</p>';
+            });
+    </script>
+
+    <footer class="bg-blue-950 text-gray-400 py-8 text-center border-t border-blue-900 mt-auto">
+        <p class="text-sm">&copy; 2026 CareerCraft South Africa.</p>
+    </footer>
+</body>
+</html>
