@@ -22,6 +22,7 @@
                 <span class="text-2xl font-black tracking-wide text-blue-950">Career<span class="text-amber-500">Craft</span></span>
             </a>
             <h2 class="mt-6 text-2xl font-extrabold text-blue-950">Sign in to your account</h2>
+            <p class="mt-2 text-sm text-gray-600">Continue building your CareerCraft profile.</p>
         </div>
         <form id="loginForm" class="mt-8 space-y-6">
             <div class="space-y-4">
@@ -34,7 +35,7 @@
                     <input id="loginPassword" type="password" required class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-900 focus:border-blue-900 sm:text-sm mt-1" placeholder="••••••••">
                 </div>
             </div>
-            <div id="loginStatus" class="hidden"></div>
+            <div id="loginStatus" class="hidden" role="status" aria-live="polite"></div>
             <div>
                 <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-blue-950 bg-amber-500 hover:bg-amber-400 focus:outline-none transition shadow-md">
                     Sign In Securely
@@ -45,6 +46,7 @@
             </div>
         </form>
     </div>
+    <script src="journey.js"></script>
     <script type="module" src="auth.js"></script>
 </body>
 </html>
