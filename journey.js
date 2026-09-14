@@ -1,4 +1,12 @@
 (function () {
+    document.querySelectorAll('a[href="index.html"]').forEach((link) => {
+        if (link.textContent.replace(/\s+/g, '') !== 'CareerCraft') return;
+        const onDarkHeader = Boolean(link.closest('header.bg-blue-950'));
+        link.innerHTML = '<img src="careercraft-logo.png" alt="CareerCraft home" class="h-10 w-auto sm:h-11">';
+        link.className = `${link.className} inline-flex items-center ${onDarkHeader ? 'rounded-lg bg-white px-2 py-1' : ''}`;
+        link.setAttribute('aria-label', 'CareerCraft home');
+    });
+
     const current = window.location.pathname.split('/').pop() || 'index.html';
     const items = [
         ['index.html', 'fa-house', 'Home'],
