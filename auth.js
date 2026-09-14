@@ -34,6 +34,11 @@ function showStatus(element, message, success = false) {
     element.className = `mt-3 rounded-lg border px-3 py-2 text-sm ${colors}`;
 }
 
+function safeNext(fallback = 'profile.html') {
+    const value = new URLSearchParams(window.location.search).get('next');
+    return value && /^[a-z0-9-]+\.html$/i.test(value) ? value : fallback;
+}
+
 async function currentUser() {
     const { data, error } = await supabase.auth.getUser();
     return error ? null : data.user;
@@ -71,7 +76,7 @@ function bindLogin() {
         button.disabled = false;
         button.textContent = 'Sign In Securely';
         if (error) return showStatus(status, error.message);
-        window.location.href = 'profile.html';
+        window.location.href = safeNext();
     });
 }
 
@@ -110,7 +115,7 @@ function bindSignup() {
                 true
             );
         }
-        window.location.href = 'profile.html';
+        window.location.href = safeNext();
     });
 }
 
@@ -155,6 +160,7 @@ async function bindProfile(user) {
             template ? `${template.name} (${template.category})` : 'No template selected yet';
         document.getElementById('selectedPlanSummary').textContent =
             plan ? `${plan.name} — ${plan.price}` : 'No subscription selected yet';
+        updateChecklist(profile, template, plan);
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -172,22 +178,69 @@ async function bindProfile(user) {
                 error ? error.message : 'Your secure profile has been updated successfully.',
                 !error
             );
+            if (!error) updateChecklist({ ...profile, ...{
+                full_name: document.getElementById('profileName').value.trim(),
+                role: document.getElementById('profileRole').value.trim(),
+                bio: document.getElementById('profileBio').value.trim(),
+                location: document.getElementById('profileLocation').value.trim()
+            } }, readLocal(TEMPLATE_KEY) || template, readLocal(PLAN_KEY) || plan);
         });
     } catch (error) {
         showStatus(status, `Could not load your profile: ${error.message}`);
     }
 }
 
+function updateChecklist(profile, template, plan) {
+    const basicsComplete = Boolean(
+        profile.full_name?.trim() && profile.role?.trim() &&
+        profile.bio?.trim() && profile.location?.trim()
+    );
+    const states = [true, basicsComplete, Boolean(template), Boolean(plan)];
+    const completed = states.filter(Boolean).length;
+    const percent = completed * 25;
+    const bar = document.getElementById('onboardingProgressBar');
+    const label = document.getElementById('onboardingProgressLabel');
+    if (bar) bar.style.width = `${percent}%`;
+    if (label) label.textContent = `${completed} of 4 steps complete`;
+    states.forEach((done, index) => {
+        const item = document.getElementById(`onboardingStep${index + 1}`);
+        const icon = item?.querySelector('[data-step-icon]');
+        item?.classList.toggle('border-emerald-200', done);
+        item?.classList.toggle('bg-emerald-50', done);
+        if (icon) {
+            icon.textContent = done ? '✓' : String(index + 1);
+            icon.className = done
+                ? 'w-7 h-7 rounded-full bg-emerald-500 text-white grid place-items-center text-sm font-bold'
+                : 'w-7 h-7 rounded-full bg-gray-200 text-gray-600 grid place-items-center text-sm font-bold';
+        }
+    });
+    const nextAction = document.getElementById('onboardingNextAction');
+    if (!nextAction) return;
+    if (!basicsComplete) {
+        nextAction.href = '#profileForm';
+        nextAction.textContent = 'Complete profile details';
+    } else if (!template) {
+        nextAction.href = 'resumes.html';
+        nextAction.textContent = 'Choose a resume template';
+    } else if (!plan) {
+        nextAction.href = 'pricing.html';
+        nextAction.textContent = 'Choose a plan';
+    } else {
+        nextAction.href = 'portfolio.html';
+        nextAction.textContent = 'Explore your portfolio tools';
+    }
+}
+
 function bindSelections(user) {
     document.querySelectorAll('[data-template-card]').forEach((card) => {
         card.querySelector('[data-template-action]')?.addEventListener('click', async () => {
-            if (!user) return window.location.href = 'login.html';
             const value = {
                 name: card.dataset.templateName,
                 category: card.dataset.templateCategory,
                 description: card.dataset.templateDescription
             };
             writeLocal(TEMPLATE_KEY, value);
+            if (!user) return window.location.href = 'signup.html?next=profile.html&saved=template';
             await loadProfile(user);
             await supabase.from('profiles').update({
                 selected_template: value,
@@ -199,9 +252,9 @@ function bindSelections(user) {
 
     document.querySelectorAll('[data-plan-card]').forEach((card) => {
         card.querySelector('[data-plan-action]')?.addEventListener('click', async () => {
-            if (!user) return window.location.href = 'login.html';
             const value = { name: card.dataset.planName, price: card.dataset.planPrice };
             writeLocal(PLAN_KEY, value);
+            if (!user) return window.location.href = 'signup.html?next=profile.html&saved=plan';
             await loadProfile(user);
             await supabase.from('profiles').update({
                 selected_plan: value,
@@ -216,7 +269,15 @@ async function initialise() {
     const user = await currentUser();
     const page = window.location.pathname.split('/').pop() || 'index.html';
     if (user && ['login.html', 'signup.html'].includes(page)) {
-        return window.location.replace('profile.html');
+        return window.location.replace(safeNext());
+    }
+    const saved = new URLSearchParams(window.location.search).get('saved');
+    if (saved && document.getElementById('signupStatus')) {
+        showStatus(
+            document.getElementById('signupStatus'),
+            `Your ${saved} choice is saved. Create your free account to continue.`,
+            true
+        );
     }
     updateAuthUI(user);
     bindLogout();
