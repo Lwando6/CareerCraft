@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerCraft - My Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen">
+    <header class="bg-blue-950 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <a href="index.html" class="flex items-center space-x-3 transition hover:opacity-80">
+                    <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center text-blue-950">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M3 7a2 2 0 0 1 2-2h3V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7zm7-1h4V4h-4v2zM5 9v9h14V9H5z" />
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-black tracking-wide text-white">Career<span class="text-amber-500">Craft</span></span>
+                </a>
+                <nav class="hidden xl:flex items-center space-x-5 text-sm">
+                    <a href="index.html" class="text-gray-300 hover:text-white font-medium transition">Home</a>
+                    <a href="resumes.html" class="text-gray-300 hover:text-white font-medium transition">Templates</a>
+                    <a href="pricing.html" class="text-gray-300 hover:text-white font-medium transition">Pricing</a>
+                    <a href="profile.html" class="text-amber-500 font-bold transition">Profile</a>
+                </nav>
+                <div class="flex items-center space-x-3">
+                    <a id="navLoginLink" href="login.html" class="hidden text-gray-300 hover:text-white font-medium text-sm transition">Log In</a>
+                    <a id="navSignupLink" href="signup.html" class="hidden bg-amber-500 hover:bg-amber-400 text-blue-950 font-bold text-sm px-5 py-2.5 rounded-lg transition shadow-md">Get Started</a>
+                    <a id="navProfileLink" href="profile.html" class="text-gray-300 hover:text-white font-medium text-sm transition">Profile</a>
+                    <button id="navLogoutButton" type="button" class="bg-white/10 hover:bg-white/20 text-white font-medium text-sm px-4 py-2 rounded-lg transition">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-950 to-blue-900 px-8 py-8 text-white">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.2em] text-amber-300">Account</p>
+                        <h1 class="mt-2 text-3xl font-extrabold">My Profile</h1>
+                    </div>
+                    <button id="logoutButton" type="button" class="bg-amber-500 hover:bg-amber-400 text-blue-950 font-bold px-5 py-2.5 rounded-lg transition shadow-md">
+                        Log out
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+                        <p class="text-xs uppercase tracking-[0.2em] text-amber-700 font-bold">Selected template</p>
+                        <p id="selectedTemplateSummary" class="mt-3 text-lg font-bold text-blue-950">No template selected yet</p>
+                    </div>
+                    <div class="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+                        <p class="text-xs uppercase tracking-[0.2em] text-blue-700 font-bold">Selected subscription</p>
+                        <p id="selectedPlanSummary" class="mt-3 text-lg font-bold text-blue-950">No subscription selected yet</p>
+                    </div>
+                </div>
+
+                <form id="profileForm" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="profileName" class="block text-sm font-bold text-gray-700 mb-2">Full name</label>
+                            <input id="profileName" type="text" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900" required>
+                        </div>
+                        <div>
+                            <label for="profileEmail" class="block text-sm font-bold text-gray-700 mb-2">Email address</label>
+                            <input id="profileEmail" type="email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900" required>
+                        </div>
+                        <div>
+                            <label for="profileRole" class="block text-sm font-bold text-gray-700 mb-2">Target role</label>
+                            <input id="profileRole" type="text" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900" required>
+                        </div>
+                        <div>
+                            <label for="profileLocation" class="block text-sm font-bold text-gray-700 mb-2">Location</label>
+                            <input id="profileLocation" type="text" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900" placeholder="Johannesburg, South Africa">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="profileBio" class="block text-sm font-bold text-gray-700 mb-2">Professional bio</label>
+                        <textarea id="profileBio" rows="5" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900" placeholder="Tell employers about your strengths, experience, and goals."></textarea>
+                    </div>
+
+                    <div id="profileStatus" class="hidden"></div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-blue-950 hover:bg-blue-900 text-white font-bold px-6 py-3 rounded-xl transition shadow-md">
+                            Save profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="auth.js"></script>
+</body>
+</html>
