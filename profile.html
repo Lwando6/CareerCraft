@@ -52,6 +52,37 @@
             </div>
 
             <div class="p-8">
+                <section class="mb-10 rounded-2xl border border-gray-200 bg-gray-50 p-6" aria-labelledby="setupHeading">
+                    <div class="flex flex-wrap items-end justify-between gap-3">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-amber-700">Getting started</p>
+                            <h2 id="setupHeading" class="mt-1 text-2xl font-extrabold text-blue-950">Complete your CareerCraft profile</h2>
+                            <p id="onboardingProgressLabel" class="mt-1 text-sm text-gray-600">Checking your progress…</p>
+                        </div>
+                        <a id="onboardingNextAction" href="#profileForm" class="rounded-lg bg-blue-950 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-900">Continue setup</a>
+                    </div>
+                    <div class="mt-5 h-2 overflow-hidden rounded-full bg-gray-200" aria-hidden="true">
+                        <div id="onboardingProgressBar" class="h-full w-0 rounded-full bg-emerald-500 transition-all duration-500"></div>
+                    </div>
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <div id="onboardingStep1" class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3">
+                            <span data-step-icon class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 grid place-items-center text-sm font-bold">1</span>
+                            <span class="text-sm font-semibold text-gray-700">Account created</span>
+                        </div>
+                        <div id="onboardingStep2" class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3">
+                            <span data-step-icon class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 grid place-items-center text-sm font-bold">2</span>
+                            <span class="text-sm font-semibold text-gray-700">Profile completed</span>
+                        </div>
+                        <div id="onboardingStep3" class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3">
+                            <span data-step-icon class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 grid place-items-center text-sm font-bold">3</span>
+                            <span class="text-sm font-semibold text-gray-700">Template chosen</span>
+                        </div>
+                        <div id="onboardingStep4" class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3">
+                            <span data-step-icon class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 grid place-items-center text-sm font-bold">4</span>
+                            <span class="text-sm font-semibold text-gray-700">Plan chosen</span>
+                        </div>
+                    </div>
+                </section>
                 <div class="grid md:grid-cols-2 gap-6 mb-8">
                     <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5">
                         <p class="text-xs uppercase tracking-[0.2em] text-amber-700 font-bold">Selected template</p>
@@ -100,6 +131,7 @@
         </div>
     </main>
 
+    <script src="journey.js"></script>
     <script type="module" src="auth.js"></script>
 </body>
 </html>
