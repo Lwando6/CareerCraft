@@ -2,7 +2,7 @@ import { supabase } from './auth.js';
 
 const plans = {
   starter: { name: 'Starter', price: 'R49 / month', benefits: ['All six CV templates', 'Saved CVs and PDF export', 'Full career prompt library'] },
-  pro: { name: 'Pro', price: 'R99 / month', benefits: ['Everything in Starter', 'Tech CV and portfolio tools', 'LinkedIn and personal-brand resources'] }
+  pro: { name: 'Pro', price: 'R99 / month', benefits: ['Everything in Starter', 'Advanced My CV and portfolio tools', 'LinkedIn and personal-brand resources'] }
 };
 const saved = JSON.parse(localStorage.getItem('careercraft-selected-plan') || 'null');
 const slug = new URLSearchParams(location.search).get('plan') || saved?.slug;

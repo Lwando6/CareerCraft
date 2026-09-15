@@ -25,7 +25,7 @@
                 <nav class="hidden xl:flex items-center space-x-5 text-sm">
                     <a href="index.html" class="text-gray-300 hover:text-white font-medium transition">Home</a>
                     <a href="resumes.html" class="text-gray-300 hover:text-white font-medium transition">Templates</a>
-                    <a href="tech-resume.html" class="text-gray-300 hover:text-white font-medium transition">Tech CV</a>
+                    <a href="editor.html" class="text-gray-300 hover:text-white font-medium transition">My CV</a>
                     <a href="portfolio.html" class="text-gray-300 hover:text-white font-medium transition">Portfolio</a>
                     <a href="pricing.html" class="text-gray-300 hover:text-white font-medium transition">Pricing</a>
                     <a href="prompts.html" class="text-amber-500 font-bold transition">AI Prompts</a>
@@ -43,24 +43,24 @@
 
     <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         <div class="mb-10 text-center">
-            <h1 class="text-4xl font-extrabold text-blue-950">Tested AI Prompts</h1>
-            <p class="text-gray-600 text-lg mt-3">Copy directly into AI models for strategic output tailored to corporate requirements.</p>
+            <h1 class="text-4xl font-extrabold text-blue-950">Career Prompt Builder</h1>
+            <p class="text-gray-600 text-lg mt-3">Turn your role, experience, and a job advert into a detailed prompt you can copy into your preferred AI assistant.</p>
         </div>
 
-        <div class="space-y-6">
-            <div class="bg-white border border-gray-200 p-6 sm:p-8 rounded-2xl shadow-sm">
-                <h3 class="text-lg font-bold text-blue-950 mb-3"><i class="fa-solid fa-file-code text-amber-500 mr-2"></i> ATS Keyword Rewriter Prompt</h3>
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-sm font-mono text-gray-700 leading-relaxed">
-"Act as a senior South African recruiter. Rewrite my project experience bullet points to match this job description: [Insert Description]. Emphasize technical metrics, action verbs, and standard South African English spelling."
-                </div>
-            </div>
-
-            <div class="bg-white border border-gray-200 p-6 sm:p-8 rounded-2xl shadow-sm">
-                <h3 class="text-lg font-bold text-blue-950 mb-3"><i class="fa-solid fa-envelope-open-text text-amber-500 mr-2"></i> Targeted Cover Letter Prompt</h3>
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-sm font-mono text-gray-700 leading-relaxed">
-"Write a concise 3-paragraph cover letter for [Role Title] at [Company Name]. Highlight my academic diploma, practical technical exposure, and immediate readiness to contribute."
-                </div>
-            </div>
+        <div class="grid gap-8 lg:grid-cols-[1fr_1.05fr]">
+            <form id="promptBuilderForm" class="space-y-5 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+                <div><label for="promptType" class="mb-2 block text-sm font-bold text-gray-700">What do you want to create?</label><select id="promptType" class="w-full rounded-xl border border-gray-300 px-4 py-3"><option value="cv">Tailored CV content</option><option value="cover">Cover letter</option><option value="linkedin">LinkedIn summary</option><option value="interview">Interview preparation</option></select></div>
+                <div class="grid gap-4 sm:grid-cols-2"><div><label for="targetRole" class="mb-2 block text-sm font-bold text-gray-700">Target role</label><input id="targetRole" required class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="Network Support Intern"></div><div><label for="companyName" class="mb-2 block text-sm font-bold text-gray-700">Company</label><input id="companyName" class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="Company name"></div></div>
+                <div><label for="experienceInput" class="mb-2 block text-sm font-bold text-gray-700">Your relevant experience and skills</label><textarea id="experienceInput" required rows="5" class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="CCNA coursework, Packet Tracer, Wireshark, customer support…"></textarea></div>
+                <div><label for="jobDescriptionInput" class="mb-2 block text-sm font-bold text-gray-700">Job description</label><textarea id="jobDescriptionInput" rows="6" class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="Paste the vacancy requirements here for better tailoring."></textarea></div>
+                <button class="w-full rounded-xl bg-blue-950 px-5 py-3.5 font-bold text-white hover:bg-blue-900">Build my prompt</button>
+            </form>
+            <section class="h-fit rounded-2xl bg-blue-950 p-6 text-white shadow-xl sm:p-8" aria-labelledby="generatedPromptHeading">
+                <p class="text-xs font-bold uppercase tracking-[.18em] text-amber-400">Generated for you</p><h2 id="generatedPromptHeading" class="mt-2 text-2xl font-extrabold">Your ready-to-use prompt</h2>
+                <pre id="generatedPrompt" class="mt-5 min-h-72 whitespace-pre-wrap rounded-xl border border-white/10 bg-white/10 p-5 font-sans text-sm leading-6 text-blue-50">Complete the form to generate a tailored career prompt.</pre>
+                <div class="mt-4 flex flex-wrap gap-3"><button id="copyGeneratedPrompt" type="button" disabled class="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-bold text-blue-950 disabled:opacity-50">Copy prompt</button><button id="clearPrompt" type="button" class="rounded-lg border border-white/20 px-5 py-2.5 text-sm font-bold hover:bg-white/10">Clear</button></div>
+                <p id="promptStatus" class="mt-3 text-sm text-blue-200" role="status" aria-live="polite"></p>
+            </section>
         </div>
     </main>
 
@@ -68,5 +68,7 @@
         <p class="text-sm">&copy; 2026 CareerCraft South Africa.</p>
     </footer>
     <script src="journey.js"></script>
+    <script src="prompt-builder.js"></script>
+    <script type="module" src="auth.js"></script>
 </body>
 </html>

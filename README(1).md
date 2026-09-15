@@ -8,11 +8,11 @@ CareerCraft is a modern, responsive web application built to help South African 
 
 * **Homepage (`index.html`)**: Clean landing page highlighting core offerings, corporate trust badges, and primary navigation.
 * **Resume Templates (`resumes.html`)**: Industry-specific CV layouts tailored for Finance, Engineering, Healthcare, Trades, Design, and HR.
-* **Tech CV (`tech-resume.html`)**: Specialized, high-density technical resume template designed for IT, networking, and security specialists.
+* **My CV (`editor.html`)**: Modular CV workspace with live editing, theme controls, optional sections, custom content, secure saves, and PDF export.
 * **Live GitHub Portfolio (`portfolio.html`)**: Dynamic project grid powered by the GitHub REST API to fetch and display live repositories automatically.
 * **CV Builder (`editor.html`)**: Live editing, secure Supabase saves, and print-ready PDF export.
 * **Pricing & Plans (`pricing.html`)**: Free, Starter (**R49/month**), and Pro (**R99/month**) plans with Paystack checkout.
-* **AI Prompt Library (`prompts.html`)**: Direct copy-and-paste prompt templates for ATS keyword optimization and targeted cover letters.
+* **AI Prompt Builder (`prompts.html`)**: Generates tailored CV, cover-letter, LinkedIn, and interview prompts with one-click copying.
 * **LinkedIn Transformations (`linkedin.html`)**: Practical before-and-after examples of optimized recruiter headlines.
 * **Personal Branding (`branding.html`)**: Executive bio writing, digital identity design, and career strategy services.
 * **Mission & Vision (`mission.html`)**: Purpose-driven company mission and vision focused on uplifting South African talent.

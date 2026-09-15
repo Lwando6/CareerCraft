@@ -35,6 +35,22 @@
             <p class="text-xs font-bold uppercase tracking-widest text-amber-700">CV builder</p>
             <h1 class="mt-2 text-2xl font-black text-blue-950">Your information</h1>
             <p id="editorTemplateName" class="mt-1 text-sm text-slate-500">Loading template…</p>
+            <section class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4" aria-labelledby="layoutToolsHeading">
+                <div class="flex items-center justify-between"><h2 id="layoutToolsHeading" class="text-sm font-black text-blue-950">Layout tools</h2><span class="text-xs text-slate-500">Live</span></div>
+                <label class="mt-3 block text-xs font-bold text-slate-700">Accent colour
+                    <select id="themePicker" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+                        <option value="navy">CareerCraft Navy</option><option value="emerald">Emerald</option><option value="slate">Minimal Slate</option>
+                    </select>
+                </label>
+                <p class="mt-4 text-xs font-bold text-slate-700">Visible sections</p>
+                <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                    <label class="flex items-center gap-2"><input data-section-toggle="summary" type="checkbox" checked> Summary</label>
+                    <label class="flex items-center gap-2"><input data-section-toggle="skills" type="checkbox" checked> Skills</label>
+                    <label class="flex items-center gap-2"><input data-section-toggle="experience" type="checkbox" checked> Experience</label>
+                    <label class="flex items-center gap-2"><input data-section-toggle="education" type="checkbox" checked> Education</label>
+                </div>
+                <button id="addCustomSectionButton" type="button" class="mt-4 w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-bold text-blue-900 hover:bg-blue-50">+ Add custom section</button>
+            </section>
             <form id="resumeForm" class="mt-6 space-y-4">
                 <label class="block text-sm font-bold">Full name
                     <input name="fullName" required class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Your full name">
@@ -65,6 +81,10 @@
                 <label class="block text-sm font-bold">Education
                     <textarea name="education" rows="4" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Qualification — Institution — Year"></textarea>
                 </label>
+                <div id="customSectionFields" class="hidden space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                    <label class="block text-sm font-bold">Custom section heading<input name="customTitle" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="Certifications"></label>
+                    <label class="block text-sm font-bold">Custom section content<textarea name="customContent" rows="4" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5" placeholder="CCNA — Cisco Networking Academy"></textarea></label>
+                </div>
             </form>
             <div id="editorStatus" role="status" aria-live="polite" class="hidden"></div>
             <p class="mt-5 text-xs leading-relaxed text-slate-500">Tip: keep your CV concise, quantify achievements, and tailor keywords to each role.</p>
@@ -82,22 +102,23 @@
                     <p id="previewHeadline" class="mt-1 text-xl font-bold text-blue-700">Professional Headline</p>
                     <p id="previewContact" class="mt-4 text-sm text-slate-600">email@example.com · Cape Town</p>
                 </header>
-                <section class="mt-8">
+                <section class="mt-8" data-preview-section="summary">
                     <h3 class="text-sm font-black uppercase tracking-widest text-blue-950">Professional summary</h3>
                     <p id="previewSummary" class="mt-3 whitespace-pre-line leading-7 text-slate-700">Add a focused summary that explains the value you bring.</p>
                 </section>
-                <section class="mt-8">
+                <section class="mt-8" data-preview-section="skills">
                     <h3 class="text-sm font-black uppercase tracking-widest text-blue-950">Core skills</h3>
                     <div id="previewSkills" class="mt-3 flex flex-wrap gap-2"></div>
                 </section>
-                <section class="mt-8">
+                <section class="mt-8" data-preview-section="experience">
                     <h3 class="text-sm font-black uppercase tracking-widest text-blue-950">Experience</h3>
                     <p id="previewExperience" class="mt-3 whitespace-pre-line leading-7 text-slate-700">Add your experience and measurable achievements.</p>
                 </section>
-                <section class="mt-8">
+                <section class="mt-8" data-preview-section="education">
                     <h3 class="text-sm font-black uppercase tracking-widest text-blue-950">Education</h3>
                     <p id="previewEducation" class="mt-3 whitespace-pre-line leading-7 text-slate-700">Add your qualifications and training.</p>
                 </section>
+                <section id="previewCustomSection" class="mt-8 hidden" data-preview-section="custom"><h3 id="previewCustomTitle" class="text-sm font-black uppercase tracking-widest text-blue-950">Certifications</h3><p id="previewCustomContent" class="mt-3 whitespace-pre-line leading-7 text-slate-700"></p></section>
             </article>
         </section>
     </main>
