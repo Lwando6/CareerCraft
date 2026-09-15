@@ -89,7 +89,6 @@ async function run(form, tool) {
   const target = outputFor(tool);
   if (!form.reportValidity()) return;
   if (tool === 'profile_makeover' && !form.elements.images.files.length && !form.elements.profileText.value.trim()) { notice.textContent = 'Add screenshots or paste your profile text.'; return; }
-  if (tool === 'post_generator' && !form.elements.images.files.length) { notice.textContent = 'Add at least one event or work photo.'; return; }
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { notice.textContent = 'Please sign in to generate. Your uploads have not been sent.'; return; }
   state.busy = true; target.setAttribute('aria-busy','true'); const submit = form.querySelector('button:not([type=button])'); submit.disabled = true;
