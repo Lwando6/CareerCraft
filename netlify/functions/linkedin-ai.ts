@@ -55,9 +55,9 @@ async function generateWithGemini(apiKey: string, model: string, systemInstructi
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: systemInstruction + outputContract }] },
       contents: [{ role: 'user', parts: [{ text: input }, ...images.map(imagePart)] }],
-      generationConfig: { temperature: 0.5, maxOutputTokens: 5000 }
+      generationConfig: { temperature: 0.5, maxOutputTokens: 3000 }
     }),
-    signal: AbortSignal.timeout(50000)
+    signal: AbortSignal.timeout(24000)
   });
   if (!response.ok) throw new GeminiRequestError(response.status);
   const text = responseText(await response.json());
@@ -67,7 +67,7 @@ async function generateWithGemini(apiKey: string, model: string, systemInstructi
 
 export default async (request: Request) => {
   const apiKey = Netlify.env.get('GEMINI_API_KEY') || '';
-  const model = Netlify.env.get('GEMINI_MODEL') || 'gemini-3.5-flash';
+  const model = Netlify.env.get('GEMINI_MODEL') || 'gemini-3.1-flash-lite';
   if (request.method === 'GET') {
     let available = false;
     let providerStatus: number | null = null;

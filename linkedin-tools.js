@@ -67,10 +67,10 @@ formFor('profile_makeover').addEventListener('paste', event => {
 
 async function imageData(file) {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, 1000 / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas'); canvas.width = Math.round(bitmap.width * scale); canvas.height = Math.round(bitmap.height * scale);
   const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height); bitmap.close();
-  return canvas.toDataURL('image/jpeg', 0.72);
+  return canvas.toDataURL('image/jpeg', 0.62);
 }
 function copyBlock(title, value) {
   const text = Array.isArray(value) ? value.map(item => `• ${item}`).join('\n') : String(value || 'Not enough information supplied.');
@@ -100,8 +100,12 @@ async function run(form, tool) {
     const payload = JSON.stringify({ tool, fields, images, consent: form.elements.consent.checked });
     if (new TextEncoder().encode(payload).length > 4500000) throw new Error('The images are too large together. Use fewer or smaller images.');
     const { data: { session: freshSession } } = await supabase.auth.getSession();
-    const response = await fetch('/api/linkedin-ai', { method:'POST', headers:{'content-type':'application/json', authorization:`Bearer ${freshSession.access_token}`}, body:payload, signal:AbortSignal.timeout(65000) });
-    const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Please retry shortly.');
+    const response = await fetch('/api/linkedin-ai', { method:'POST', headers:{'content-type':'application/json', authorization:`Bearer ${freshSession.access_token}`}, body:payload, signal:AbortSignal.timeout(40000) });
+    const responseBody = await response.text();
+    let data;
+    try { data = JSON.parse(responseBody); }
+    catch { throw new Error(response.status === 504 ? 'The AI request took too long. Please retry with fewer screenshots.' : 'The AI service returned an invalid response. Please retry shortly.'); }
+    if (!response.ok) throw new Error(data.error || 'Please retry shortly.');
     state.result = data.result; state.fields = fields; state.saved = false;
     tool === 'profile_makeover' ? renderProfile(data.result) : renderPosts(data.result);
     notice.textContent = 'Results ready. Check every claim before copying or publishing.';
