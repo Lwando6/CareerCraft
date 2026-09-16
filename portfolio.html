@@ -47,6 +47,22 @@
             <button class="rounded-xl bg-blue-950 px-5 py-3 font-bold text-white hover:bg-blue-900">Show projects</button>
         </form>
 
+        <section id="cvProjectPanel" class="mb-8 hidden rounded-2xl border border-blue-200 bg-blue-50 p-5 sm:p-6" aria-labelledby="cvProjectHeading">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                    <h2 id="cvProjectHeading" class="text-xl font-black text-blue-950">Add selected projects to a CV</h2>
+                    <p class="mt-1 text-sm text-slate-600">Choose repositories below, select one of your saved CVs, and add them as a Projects section.</p>
+                </div>
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                    <label class="text-sm font-bold text-blue-950">Choose CV
+                        <select id="resumePicker" class="mt-1 min-w-64 rounded-lg border border-blue-200 bg-white px-3 py-2.5 text-sm"></select>
+                    </label>
+                    <button id="addProjectsToResume" type="button" class="rounded-lg bg-amber-500 px-5 py-3 text-sm font-bold text-blue-950 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50">Add to chosen CV</button>
+                </div>
+            </div>
+            <p id="portfolioStatus" role="status" aria-live="polite" class="mt-4 text-sm text-slate-600">Select at least one project.</p>
+        </section>
+
         <div id="github-repos" class="grid md:grid-cols-2 gap-6">
             <div class="col-span-2 text-center py-12">
                 <i class="fa-solid fa-spinner fa-spin text-3xl text-amber-500 mb-4"></i>

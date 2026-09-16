@@ -7,6 +7,7 @@ let selected = null;
 try { selected = JSON.parse(localStorage.getItem('careercraft-selected-template') || 'null'); } catch (_) { selected = null; }
 let templateSlug = params.get('template') || selected?.slug || 'corporate-accountant';
 let resumeId = params.get('id');
+let selectedProjects = [];
 
 function message(text, success = false) {
     status.textContent = text;
@@ -17,6 +18,7 @@ function values() {
     return {
         ...Object.fromEntries(new FormData(form).entries()),
         theme: document.getElementById('themePicker').value,
+        projects: selectedProjects,
         sections: Object.fromEntries([...document.querySelectorAll('[data-section-toggle]')].map(input => [input.dataset.sectionToggle, input.checked]))
     };
 }
@@ -29,6 +31,9 @@ function render() {
     document.getElementById('previewSummary').textContent = data.summary || 'Add a focused summary that explains the value you bring.';
     document.getElementById('previewExperience').textContent = data.experience || 'Add your experience and measurable achievements.';
     document.getElementById('previewEducation').textContent = data.education || 'Add your qualifications and training.';
+    const safeUrl = value => /^https:\/\/github\.com\//.test(value || '') ? value : '';
+    document.getElementById('previewProjects').innerHTML = selectedProjects.map(project => `<div><div class="flex flex-wrap items-baseline justify-between gap-2"><h4 class="font-bold text-slate-900">${String(project.name || '').replace(/[<>&"]/g, '')}</h4>${project.language ? `<span class="text-xs font-semibold text-slate-500">${String(project.language).replace(/[<>&"]/g, '')}</span>` : ''}</div><p class="mt-1 text-sm leading-6 text-slate-700">${String(project.description || '').replace(/[<>&"]/g, '')}</p>${safeUrl(project.url) ? `<a class="mt-1 inline-block text-sm font-bold text-blue-700" href="${project.url}" target="_blank" rel="noopener">GitHub repository</a>` : ''}</div>`).join('');
+    document.getElementById('previewProjectsSection').classList.toggle('hidden', !selectedProjects.length || data.sections?.projects === false);
     document.getElementById('previewSkills').innerHTML = (data.skills || '').split(',').map(s => s.trim()).filter(Boolean)
         .map(skill => `<span class="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-900">${skill.replace(/[<>&"]/g, '')}</span>`).join('');
     const colors = { navy: ['border-blue-950', 'text-blue-950'], emerald: ['border-emerald-700', 'text-emerald-800'], slate: ['border-slate-700', 'text-slate-800'] };
@@ -64,6 +69,7 @@ async function initialise() {
         }
         else {
             templateSlug = data.template_slug;
+            selectedProjects = Array.isArray(data.content?.projects) ? data.content.projects.slice(0, 12) : [];
             setTemplateLabel();
             Object.entries(data.content || {}).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value; });
             if (data.content?.theme) document.getElementById('themePicker').value = data.content.theme;
