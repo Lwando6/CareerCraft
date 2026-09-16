@@ -67,7 +67,7 @@ async function generateWithGemini(apiKey: string, model: string, systemInstructi
 
 export default async (request: Request) => {
   const apiKey = Netlify.env.get('GEMINI_API_KEY') || '';
-  const model = Netlify.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
+  const model = Netlify.env.get('GEMINI_MODEL') || 'gemini-3.5-flash';
   if (request.method === 'GET') {
     let available = false;
     let providerStatus: number | null = null;
