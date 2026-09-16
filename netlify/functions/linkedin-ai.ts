@@ -34,13 +34,18 @@ function responseText(payload: any) {
 }
 
 async function generateWithGemini(apiKey: string, model: string, systemInstruction: string, input: string, images: string[], schema: any) {
+  // Gemini accepts JSON output mode reliably across current models, but some
+  // models reject JSON Schema keywords such as additionalProperties and
+  // minItems when they are sent as responseJsonSchema. Keep the full contract
+  // in the instruction and enforce it again with matchesSchema() server-side.
+  const outputContract = `\nReturn only one valid JSON object (no Markdown) that matches this schema exactly:\n${JSON.stringify(schema)}`;
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: systemInstruction }] },
+      systemInstruction: { parts: [{ text: systemInstruction + outputContract }] },
       contents: [{ role: 'user', parts: [{ text: input }, ...images.map(imagePart)] }],
-      generationConfig: { temperature: 0.5, maxOutputTokens: 5000, responseMimeType: 'application/json', responseJsonSchema: schema }
+      generationConfig: { temperature: 0.5, maxOutputTokens: 5000, responseMimeType: 'application/json' }
     }),
     signal: AbortSignal.timeout(50000)
   });
