@@ -33,6 +33,16 @@ function responseText(payload: any) {
   return payload?.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text || '').join('').trim() || '';
 }
 
+function parseJsonResult(text: string) {
+  const unfenced = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  try { return JSON.parse(unfenced); } catch {
+    const start = unfenced.indexOf('{');
+    const end = unfenced.lastIndexOf('}');
+    if (start < 0 || end <= start) throw new SyntaxError('INVALID_JSON_RESPONSE');
+    return JSON.parse(unfenced.slice(start, end + 1));
+  }
+}
+
 async function generateWithGemini(apiKey: string, model: string, systemInstruction: string, input: string, images: string[], schema: any) {
   // Gemini accepts JSON output mode reliably across current models, but some
   // models reject JSON Schema keywords such as additionalProperties and
@@ -45,7 +55,7 @@ async function generateWithGemini(apiKey: string, model: string, systemInstructi
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: systemInstruction + outputContract }] },
       contents: [{ role: 'user', parts: [{ text: input }, ...images.map(imagePart)] }],
-      generationConfig: { temperature: 0.5, maxOutputTokens: 5000, responseMimeType: 'application/json' }
+      generationConfig: { temperature: 0.5, maxOutputTokens: 5000 }
     }),
     signal: AbortSignal.timeout(50000)
   });
@@ -102,7 +112,7 @@ export default async (request: Request) => {
     stage = 'gemini-generation';
     const output = await generateWithGemini(apiKey, model, systemInstruction, input, images, schemas[tool].schema);
     stage = 'result-parsing';
-    const result = JSON.parse(output);
+    const result = parseJsonResult(output);
     if (tool === 'post_generator' && !images.length && Array.isArray(result.posts)) result.posts.forEach((post: any) => { post.altText = []; });
     stage = 'result-validation';
     if (!matchesSchema(result, schemas[tool].schema)) return json({ error: 'The AI returned an invalid result. Please try again with shorter notes.' }, 502);
