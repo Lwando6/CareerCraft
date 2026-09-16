@@ -60,13 +60,15 @@ export default async (request: Request) => {
   const model = Netlify.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
   if (request.method === 'GET') {
     let available = false;
+    let providerStatus: number | null = null;
     if (apiKey) {
       try {
         const check = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}`, { headers: { 'x-goog-api-key': apiKey }, signal: AbortSignal.timeout(5000) });
+        providerStatus = check.status;
         available = check.ok;
       } catch { /* Provider details and secrets stay server-side. */ }
     }
-    return new Response(JSON.stringify({ available, provider: 'Google Gemini', model }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+    return new Response(JSON.stringify({ configured: Boolean(apiKey), available, providerStatus, provider: 'Google Gemini', model }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
   }
 
   if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
