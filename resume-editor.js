@@ -56,8 +56,12 @@ async function initialise() {
     setTemplateLabel();
     form.elements.email.value = user.email || '';
     if (resumeId) {
-        const { data, error } = await supabase.from('resumes').select('*').eq('id', resumeId).single();
+        const { data, error } = await supabase.from('resumes').select('*').eq('id', resumeId).eq('user_id', user.id).maybeSingle();
         if (error) message(error.message);
+        else if (!data) {
+            resumeId = null;
+            message('This CV could not be found in your account. You can save this page as a new CV.');
+        }
         else {
             templateSlug = data.template_slug;
             setTemplateLabel();
@@ -88,16 +92,32 @@ document.getElementById('addCustomSectionButton').addEventListener('click', () =
     render();
 });
 document.getElementById('saveResumeButton').addEventListener('click', async () => {
+    if (!form.reportValidity()) return message('Complete the required name, headline and email fields before saving.');
+    const button = document.getElementById('saveResumeButton');
+    const saveState = document.getElementById('saveState');
+    button.disabled = true;
+    button.textContent = 'Saving…';
+    saveState.textContent = 'Saving securely…';
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return location.replace('login.html?next=editor.html');
     const payload = { user_id: user.id, template_slug: templateSlug, title: `${values().fullName || 'My'} CV`, content: values(), updated_at: new Date().toISOString() };
     const query = resumeId
-        ? supabase.from('resumes').update(payload).eq('id', resumeId).select().single()
+        ? supabase.from('resumes').update(payload).eq('id', resumeId).eq('user_id', user.id).select().maybeSingle()
         : supabase.from('resumes').insert(payload).select().single();
     const { data, error } = await query;
-    if (error) return message(error.message);
+    button.disabled = false;
+    button.textContent = 'Save';
+    if (error) {
+        saveState.textContent = 'Save failed';
+        return message(`Could not save this CV: ${error.message}`);
+    }
+    if (!data) {
+        saveState.textContent = 'Save failed';
+        return message('The CV was not saved. Refresh the page and try again.');
+    }
     resumeId = data.id;
     history.replaceState({}, '', `editor.html?id=${resumeId}`);
+    saveState.textContent = `Saved ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     message('CV saved securely to your account.', true);
 });
 document.getElementById('downloadResumeButton').addEventListener('click', () => window.print());

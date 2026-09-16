@@ -258,17 +258,21 @@ function bindSelections(user) {
             };
             writeLocal(TEMPLATE_KEY, value);
             if (!user) return window.location.href = 'signup.html?next=editor.html&saved=template';
-            if (card.dataset.templateTier !== 'free') {
-                const { data: entitlement } = await supabase.from('subscriptions').select('status,current_period_end').eq('user_id', user.id).maybeSingle();
-                const active = entitlement?.status === 'active' && (!entitlement.current_period_end || new Date(entitlement.current_period_end) > new Date());
-                if (!active) return window.location.href = 'pricing.html?required=starter';
-            }
-            await loadProfile(user);
-            await supabase.from('profiles').update({
+            try {
+                await loadProfile(user);
+                const { error } = await supabase.from('profiles').update({
                 selected_template: value,
                 updated_at: new Date().toISOString()
-            }).eq('user_id', user.id);
-            window.location.href = `editor.html?template=${encodeURIComponent(value.slug)}`;
+                }).eq('user_id', user.id);
+                if (error) throw error;
+                window.location.href = `editor.html?template=${encodeURIComponent(value.slug)}`;
+            } catch (error) {
+                const panel = document.getElementById('selectedTemplatePanel');
+                if (panel) {
+                    panel.textContent = `Could not select this template: ${error.message}`;
+                    panel.className = 'mb-8 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700';
+                }
+            }
         });
     });
 
@@ -302,13 +306,6 @@ async function initialise() {
         );
     }
     updateAuthUI(user);
-    if (new URLSearchParams(window.location.search).has('required')) {
-        const panel = document.getElementById('selectedPlanPanel');
-        if (panel) {
-            panel.textContent = 'This template is included with Starter or Pro. Choose a plan to continue.';
-            panel.className = 'mb-8 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800';
-        }
-    }
     bindLogout();
     bindLogin();
     bindSignup();
