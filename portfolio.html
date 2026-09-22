@@ -61,6 +61,15 @@
                 </div>
             </div>
             <p id="portfolioStatus" role="status" aria-live="polite" class="mt-4 text-sm text-slate-600">Select at least one project.</p>
+            <div class="mt-5 border-t border-blue-200 pt-5">
+                <div class="flex items-center justify-between gap-3">
+                    <h3 class="text-sm font-black uppercase tracking-wide text-blue-950">Projects selected for your CV</h3>
+                    <span id="selectedProjectCount" class="rounded-full bg-white px-3 py-1 text-xs font-bold text-blue-800">0 selected</span>
+                </div>
+                <div id="selectedProjectsPreview" aria-live="polite" class="mt-3 grid gap-3 sm:grid-cols-2">
+                    <p class="sm:col-span-2 rounded-xl border border-dashed border-blue-200 bg-white/70 px-4 py-5 text-center text-sm text-slate-500">Tick a GitHub project below to preview it here before adding it to your CV.</p>
+                </div>
+            </div>
         </section>
 
         <div id="github-repos" class="grid md:grid-cols-2 gap-6">

@@ -7,6 +7,8 @@ const cvPanel = document.getElementById('cvProjectPanel');
 const resumePicker = document.getElementById('resumePicker');
 const addButton = document.getElementById('addProjectsToResume');
 const portfolioStatus = document.getElementById('portfolioStatus');
+const selectedPreview = document.getElementById('selectedProjectsPreview');
+const selectedCount = document.getElementById('selectedProjectCount');
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
 let currentUser = null;
 let repositories = [];
@@ -26,8 +28,11 @@ function selectedRepositories() {
 
 function updateSelectionStatus() {
   if (!currentUser) return;
-  const count = selectedRepositories().length;
+  const selected = selectedRepositories();
+  const count = selected.length;
   portfolioStatus.textContent = count ? `${count} project${count === 1 ? '' : 's'} selected.` : 'Select at least one project.';
+  selectedCount.textContent = `${count} selected`;
+  selectedPreview.innerHTML = count ? selected.map(project => `<article class="rounded-xl border border-blue-200 bg-white p-4 shadow-sm"><div class="flex items-start justify-between gap-3"><div class="min-w-0"><h4 class="truncate font-bold text-blue-950">${escapeHTML(project.name)}</h4><p class="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-600">${escapeHTML(project.description)}</p></div><button type="button" data-remove-selected="${escapeHTML(project.name)}" class="shrink-0 rounded-md px-2 py-1 text-xs font-bold text-red-700 hover:bg-red-50" aria-label="Remove ${escapeHTML(project.name)} from selected projects">Remove</button></div><div class="mt-3 flex items-center gap-2 text-xs text-slate-500"><span class="rounded-full bg-amber-100 px-2 py-1 font-semibold text-amber-800">${escapeHTML(project.language || 'Code')}</span><span>${project.stars} star${project.stars === 1 ? '' : 's'}</span></div></article>`).join('') : '<p class="sm:col-span-2 rounded-xl border border-dashed border-blue-200 bg-white/70 px-4 py-5 text-center text-sm text-slate-500">Tick a GitHub project below to preview it here before adding it to your CV.</p>';
   addButton.disabled = !count || !resumePicker.value;
 }
 
@@ -37,7 +42,7 @@ async function load(username) {
     const response = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?sort=updated&per_page=6`);
     if (!response.ok) throw new Error(response.status === 404 ? 'GitHub user not found.' : 'GitHub could not load these projects.');
     repositories = await response.json();
-    container.innerHTML = repositories.length ? repositories.map(repo => `<article class="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"><div>${currentUser ? `<label class="mb-4 flex cursor-pointer items-center gap-3 rounded-lg bg-blue-50 px-3 py-2 text-sm font-bold text-blue-950"><input type="checkbox" data-project-select value="${escapeHTML(repo.name)}" class="h-4 w-4 accent-blue-950"> Add this project to my CV</label>` : ''}<div class="mb-3 flex items-center justify-between gap-3"><h3 class="font-bold text-blue-950">${escapeHTML(repo.name)}</h3><span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">${escapeHTML(repo.language || 'Code')}</span></div><p class="mb-6 text-sm leading-relaxed text-gray-600">${escapeHTML(repo.description || 'Public engineering repository.')}</p></div><a href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener" class="text-sm font-bold text-blue-700">View source code →</a></article>`).join('') : '<p class="col-span-2 text-center text-gray-500">No public repositories found.</p>';
+    container.innerHTML = repositories.length ? repositories.map(repo => `<article data-project-card class="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition"><div>${currentUser ? `<label class="mb-4 flex cursor-pointer items-center gap-3 rounded-lg bg-blue-50 px-3 py-2 text-sm font-bold text-blue-950"><input type="checkbox" data-project-select value="${escapeHTML(repo.name)}" class="h-4 w-4 accent-blue-950"> Add this project to my CV</label>` : ''}<div class="mb-3 flex items-center justify-between gap-3"><h3 class="font-bold text-blue-950">${escapeHTML(repo.name)}</h3><span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">${escapeHTML(repo.language || 'Code')}</span></div><p class="mb-6 text-sm leading-relaxed text-gray-600">${escapeHTML(repo.description || 'Public engineering repository.')}</p></div><a href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener" class="text-sm font-bold text-blue-700">View source code →</a></article>`).join('') : '<p class="col-span-2 text-center text-gray-500">No public repositories found.</p>';
     updateSelectionStatus();
   } catch (error) { container.innerHTML = `<p class="col-span-2 text-center text-red-600">${escapeHTML(error.message)}</p>`; }
 }
@@ -66,7 +71,25 @@ if (user) {
   container.innerHTML = '<p class="col-span-2 text-center text-gray-500">Enter a GitHub username to preview public projects.</p>';
 }
 
-container.addEventListener('change', event => { if (event.target.matches('[data-project-select]')) updateSelectionStatus(); });
+container.addEventListener('change', event => {
+  if (!event.target.matches('[data-project-select]')) return;
+  const card = event.target.closest('[data-project-card]');
+  card?.classList.toggle('border-blue-700', event.target.checked);
+  card?.classList.toggle('ring-2', event.target.checked);
+  card?.classList.toggle('ring-blue-200', event.target.checked);
+  updateSelectionStatus();
+});
+selectedPreview.addEventListener('click', event => {
+  const button = event.target.closest('[data-remove-selected]');
+  if (!button) return;
+  const checkbox = [...document.querySelectorAll('[data-project-select]')].find(input => input.value === button.dataset.removeSelected);
+  if (checkbox) {
+    checkbox.checked = false;
+    const card = checkbox.closest('[data-project-card]');
+    card?.classList.remove('border-blue-700', 'ring-2', 'ring-blue-200');
+  }
+  updateSelectionStatus();
+});
 resumePicker.addEventListener('change', updateSelectionStatus);
 addButton.addEventListener('click', async () => {
   const projects = selectedRepositories();
