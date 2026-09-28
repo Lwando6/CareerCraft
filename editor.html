@@ -8,6 +8,27 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body { font-family: Inter, system-ui, sans-serif; }
+        .design-option:has(input:checked) { border-color: #f59e0b; background: #fffbeb; box-shadow: 0 0 0 2px rgba(245, 158, 11, .16); }
+        .design-option:has(input:disabled) { cursor: not-allowed; opacity: .58; }
+        #resumePreview { transition: background-color .2s ease, border-color .2s ease; }
+        #resumePreview[data-design="minimal"] > header { text-align: center; border-bottom-width: 1px; border-color: #cbd5e1; }
+        #resumePreview[data-design="minimal"] #previewContact { letter-spacing: .04em; }
+        #resumePreview[data-design="minimal"] [data-preview-section] > h3 { font-size: .72rem; letter-spacing: .22em; }
+        #resumePreview[data-design="executive"] { border-left: 10px solid #172554; }
+        #resumePreview[data-design="executive"] > header { border-bottom-width: 1px; padding-bottom: 2rem; }
+        #resumePreview[data-design="executive"] #previewName { font-family: Georgia, serif; font-weight: 700; letter-spacing: -.02em; }
+        #resumePreview[data-design="executive"] [data-preview-section] > h3 { border-left: 4px solid #f59e0b; padding-left: .75rem; }
+        #resumePreview[data-design="creative"] { display: grid; grid-template-columns: minmax(0, 34%) minmax(0, 66%); column-gap: 2rem; align-content: start; }
+        #resumePreview[data-design="creative"] > header { grid-column: 1 / -1; margin: -3.5rem -3.5rem 0; padding: 3.5rem; border: 0; background: linear-gradient(135deg, #172554, #1d4ed8); }
+        #resumePreview[data-design="creative"] > header h2, #resumePreview[data-design="creative"] > header p { color: white !important; }
+        #resumePreview[data-design="creative"] > [data-preview-section="summary"] { grid-column: 1 / -1; }
+        #resumePreview[data-design="creative"] > [data-preview-section="skills"], #resumePreview[data-design="creative"] > [data-preview-section="education"] { grid-column: 1; }
+        #resumePreview[data-design="creative"] > [data-preview-section="experience"] { grid-column: 2; grid-row: span 2; }
+        #resumePreview[data-design="creative"] > [data-preview-section="projects"], #resumePreview[data-design="creative"] > [data-preview-section="custom"] { grid-column: 1 / -1; }
+        @media (max-width: 640px) {
+            #resumePreview[data-design="creative"] { display: block; }
+            #resumePreview[data-design="creative"] > header { margin: -2.5rem -2.5rem 0; padding: 2.5rem; }
+        }
         @media print {
             body { background: white !important; }
             .no-print { display: none !important; }
@@ -35,6 +56,35 @@
             <p class="text-xs font-bold uppercase tracking-widest text-amber-700">CV builder</p>
             <h1 class="mt-2 text-2xl font-black text-blue-950">Your information</h1>
             <p id="editorTemplateName" class="mt-1 text-sm text-slate-500">Loading template…</p>
+            <section class="mt-6 rounded-xl border border-slate-200 bg-white p-4" aria-labelledby="resumeDesignHeading">
+                <div class="flex items-start justify-between gap-3">
+                    <div><h2 id="resumeDesignHeading" class="text-sm font-black text-blue-950">Resume design</h2><p class="mt-1 text-xs leading-5 text-slate-500">Choose the visual layout. Your content stays unchanged.</p></div>
+                    <span class="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-black uppercase text-emerald-700">Live</span>
+                </div>
+                <div id="resumeDesignPicker" class="mt-4 grid grid-cols-2 gap-3">
+                    <label class="design-option cursor-pointer rounded-xl border border-slate-200 p-3 transition">
+                        <input class="sr-only" type="radio" name="resumeDesign" value="classic" data-design-tier="free" checked>
+                        <span class="block h-12 rounded-md border border-slate-200 bg-white p-2"><span class="block h-1 w-8 bg-blue-950"></span><span class="mt-2 block h-px bg-slate-300"></span><span class="mt-1 block h-px w-3/4 bg-slate-200"></span></span>
+                        <span class="mt-2 block text-xs font-black text-blue-950">ATS Classic</span><span class="text-[10px] font-bold uppercase text-emerald-700">Free</span>
+                    </label>
+                    <label class="design-option cursor-pointer rounded-xl border border-slate-200 p-3 transition">
+                        <input class="sr-only" type="radio" name="resumeDesign" value="minimal" data-design-tier="free">
+                        <span class="block h-12 rounded-md border border-slate-200 bg-white p-2 text-center"><span class="mx-auto block h-1 w-8 bg-slate-700"></span><span class="mt-2 block h-px bg-slate-300"></span><span class="mx-auto mt-1 block h-px w-3/4 bg-slate-200"></span></span>
+                        <span class="mt-2 block text-xs font-black text-blue-950">Modern Minimal</span><span class="text-[10px] font-bold uppercase text-emerald-700">Free</span>
+                    </label>
+                    <label class="design-option cursor-pointer rounded-xl border border-slate-200 p-3 transition">
+                        <input class="sr-only" type="radio" name="resumeDesign" value="executive" data-design-tier="starter">
+                        <span class="block h-12 rounded-md border border-slate-200 border-l-4 border-l-blue-950 bg-white p-2"><span class="block h-1 w-8 bg-blue-950"></span><span class="mt-2 block h-px bg-amber-400"></span><span class="mt-1 block h-px w-3/4 bg-slate-200"></span></span>
+                        <span class="mt-2 block text-xs font-black text-blue-950">Executive Edge</span><span class="text-[10px] font-bold uppercase text-amber-700">Starter</span>
+                    </label>
+                    <label class="design-option cursor-pointer rounded-xl border border-slate-200 p-3 transition">
+                        <input class="sr-only" type="radio" name="resumeDesign" value="creative" data-design-tier="pro">
+                        <span class="grid h-12 grid-cols-3 overflow-hidden rounded-md border border-slate-200 bg-white"><span class="bg-blue-950"></span><span class="col-span-2 p-2"><span class="block h-1 w-8 bg-blue-600"></span><span class="mt-2 block h-px bg-slate-200"></span></span></span>
+                        <span class="mt-2 block text-xs font-black text-blue-950">Creative Split</span><span class="text-[10px] font-bold uppercase text-blue-700">Pro</span>
+                    </label>
+                </div>
+                <p id="designAccessNote" class="mt-3 text-xs text-slate-500">Two ATS-friendly designs are included free.</p>
+            </section>
             <section class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4" aria-labelledby="layoutToolsHeading">
                 <div class="flex items-center justify-between"><h2 id="layoutToolsHeading" class="text-sm font-black text-blue-950">Layout tools</h2><span class="text-xs text-slate-500">Live</span></div>
                 <label class="mt-3 block text-xs font-bold text-slate-700">Accent colour

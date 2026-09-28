@@ -15,6 +15,8 @@ try { selected = JSON.parse(localStorage.getItem('careercraft-selected-template'
 let templateSlug = params.get('template') || selected?.slug || 'corporate-accountant';
 let resumeId = params.get('id');
 let selectedProjects = [];
+const planRank = { free: 0, starter: 1, pro: 2 };
+const designPlan = { classic: 'free', minimal: 'free', executive: 'starter', creative: 'pro' };
 
 function requiredTemplatePlan(slug) {
     return slug === 'corporate-accountant' ? 'free' : 'starter';
@@ -27,6 +29,17 @@ function showUpgradeGate(requiredPlan, feature) {
 }
 
 function configureEditorTools() {
+    document.querySelectorAll('[name="resumeDesign"]').forEach(input => {
+        const required = input.dataset.designTier || 'free';
+        const allowed = (planRank[access.plan] ?? 0) >= (planRank[required] ?? 0);
+        input.disabled = !allowed;
+        if (!allowed) input.closest('label')?.setAttribute('title', `${required === 'pro' ? 'Pro' : 'Starter'} plan required`);
+    });
+    document.getElementById('designAccessNote').textContent = access.plan === 'pro'
+        ? 'All four resume designs are unlocked.'
+        : access.plan === 'starter'
+            ? 'Three designs unlocked. Creative Split is available on Pro.'
+            : 'Two ATS-friendly designs are included free. Upgrade for premium layouts.';
     if (access.plan === 'pro') return;
     document.getElementById('themePicker').value = 'navy';
     document.getElementById('themePicker').disabled = true;
@@ -49,6 +62,7 @@ function values() {
     return {
         ...Object.fromEntries(new FormData(form).entries()),
         theme: document.getElementById('themePicker').value,
+        design: document.querySelector('[name="resumeDesign"]:checked')?.value || 'classic',
         projects: selectedProjects,
         sections: Object.fromEntries([...document.querySelectorAll('[data-section-toggle]')].map(input => [input.dataset.sectionToggle, input.checked]))
     };
@@ -56,6 +70,7 @@ function values() {
 
 function render() {
     const data = values();
+    document.getElementById('resumePreview').dataset.design = data.design || 'classic';
     document.getElementById('previewName').textContent = data.fullName || 'Your Name';
     document.getElementById('previewHeadline').textContent = data.headline || 'Professional Headline';
     document.getElementById('previewContact').textContent = [data.email, data.phone, data.location].filter(Boolean).join(' · ') || 'email@example.com · Cape Town';
@@ -104,6 +119,12 @@ async function initialise() {
                 showUpgradeGate(requiredTemplatePlan(templateSlug), `${templateSlug.replaceAll('-', ' ')} template`);
                 return;
             }
+            const savedDesign = data.content?.design || 'classic';
+            const requiredDesignPlan = designPlan[savedDesign] || 'free';
+            if ((planRank[access.plan] ?? 0) < (planRank[requiredDesignPlan] ?? 0)) {
+                showUpgradeGate(requiredDesignPlan, `${savedDesign.replaceAll('-', ' ')} resume design`);
+                return;
+            }
             const containsProContent = (Array.isArray(data.content?.projects) && data.content.projects.length) || data.content?.customTitle || data.content?.customContent || (data.content?.theme && data.content.theme !== 'navy');
             if (access.plan !== 'pro' && containsProContent) {
                 showUpgradeGate('pro', 'advanced CV content');
@@ -113,6 +134,8 @@ async function initialise() {
             setTemplateLabel();
             Object.entries(data.content || {}).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value; });
             if (data.content?.theme) document.getElementById('themePicker').value = data.content.theme;
+            const designInput = document.querySelector(`[name="resumeDesign"][value="${savedDesign}"]`);
+            if (designInput) designInput.checked = true;
             Object.entries(data.content?.sections || {}).forEach(([key, value]) => { const toggle = document.querySelector(`[data-section-toggle="${key}"]`); if (toggle) toggle.checked = value; });
             if (data.content?.customTitle || data.content?.customContent) document.getElementById('customSectionFields').classList.remove('hidden');
         }
@@ -136,6 +159,7 @@ async function initialise() {
 
 form.addEventListener('input', render);
 document.getElementById('themePicker').addEventListener('change', render);
+document.querySelectorAll('[name="resumeDesign"]').forEach(input => input.addEventListener('change', render));
 document.querySelectorAll('[data-section-toggle]').forEach(input => input.addEventListener('change', render));
 document.getElementById('addCustomSectionButton').addEventListener('click', () => {
     document.getElementById('customSectionFields').classList.toggle('hidden');
