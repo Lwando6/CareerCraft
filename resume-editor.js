@@ -16,7 +16,7 @@ let templateSlug = params.get('template') || selected?.slug || 'corporate-accoun
 let resumeId = params.get('id');
 let selectedProjects = [];
 const planRank = { free: 0, starter: 1, pro: 2 };
-const designPlan = { classic: 'free', minimal: 'free', executive: 'starter', creative: 'pro' };
+const designPlan = { classic: 'free', minimal: 'free', executive: 'starter', skyline: 'starter', creative: 'pro', midnight: 'pro' };
 
 function requiredTemplatePlan(slug) {
     return slug === 'corporate-accountant' ? 'free' : 'starter';
@@ -36,9 +36,9 @@ function configureEditorTools() {
         if (!allowed) input.closest('label')?.setAttribute('title', `${required === 'pro' ? 'Pro' : 'Starter'} plan required`);
     });
     document.getElementById('designAccessNote').textContent = access.plan === 'pro'
-        ? 'All four resume designs are unlocked.'
+        ? 'All six resume designs are unlocked.'
         : access.plan === 'starter'
-            ? 'Three designs unlocked. Creative Split is available on Pro.'
+            ? 'Four designs unlocked. Creative Split and Midnight Sidebar are available on Pro.'
             : 'Two ATS-friendly designs are included free. Upgrade for premium layouts.';
     if (access.plan === 'pro') return;
     document.getElementById('themePicker').value = 'navy';

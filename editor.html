@@ -25,9 +25,29 @@
         #resumePreview[data-design="creative"] > [data-preview-section="skills"], #resumePreview[data-design="creative"] > [data-preview-section="education"] { grid-column: 1; }
         #resumePreview[data-design="creative"] > [data-preview-section="experience"] { grid-column: 2; grid-row: span 2; }
         #resumePreview[data-design="creative"] > [data-preview-section="projects"], #resumePreview[data-design="creative"] > [data-preview-section="custom"] { grid-column: 1 / -1; }
+        #resumePreview[data-design="skyline"] { display: grid; grid-template-columns: minmax(0, 32%) minmax(0, 68%); column-gap: 2rem; align-content: start; }
+        #resumePreview[data-design="skyline"] > header { grid-column: 1 / -1; margin: -3.5rem -3.5rem 0; padding: 3rem 3.5rem; border: 0; background: #dbeafe; text-align: center; }
+        #resumePreview[data-design="skyline"] > [data-preview-section="summary"] { grid-column: 2; grid-row: 2; }
+        #resumePreview[data-design="skyline"] > [data-preview-section="skills"] { grid-column: 1; grid-row: 2; margin-left: -1rem; padding: 1.5rem 1rem; background: #eff6ff; }
+        #resumePreview[data-design="skyline"] > [data-preview-section="experience"] { grid-column: 2; grid-row: 3; }
+        #resumePreview[data-design="skyline"] > [data-preview-section="education"] { grid-column: 1; grid-row: 3; margin: 0 0 0 -1rem; padding: 1.5rem 1rem; background: #eff6ff; }
+        #resumePreview[data-design="skyline"] > [data-preview-section="projects"], #resumePreview[data-design="skyline"] > [data-preview-section="custom"] { grid-column: 1 / -1; }
+        #resumePreview[data-design="skyline"] [data-preview-section] > h3 { border-bottom: 1px solid #93c5fd; padding-bottom: .45rem; }
+        #resumePreview[data-design="midnight"] { display: grid; grid-template-columns: minmax(0, 34%) minmax(0, 66%); column-gap: 2rem; align-content: start; }
+        #resumePreview[data-design="midnight"] > header { grid-column: 1; grid-row: 1; margin: -3.5rem 0 0 -3.5rem; padding: 3.5rem 2rem 2rem; border: 0; background: #0f172a; }
+        #resumePreview[data-design="midnight"] > header h2, #resumePreview[data-design="midnight"] > header p { color: white !important; }
+        #resumePreview[data-design="midnight"] > [data-preview-section="summary"] { grid-column: 2; grid-row: 1; margin-top: 0; }
+        #resumePreview[data-design="midnight"] > [data-preview-section="skills"] { grid-column: 1; grid-row: 2; margin: 0 0 0 -3.5rem; padding: 2rem; background: #0f172a; color: white; }
+        #resumePreview[data-design="midnight"] > [data-preview-section="skills"] h3, #resumePreview[data-design="midnight"] > [data-preview-section="education"] h3 { color: #fbbf24 !important; }
+        #resumePreview[data-design="midnight"] #previewSkills span { background: rgba(255,255,255,.12); color: white; }
+        #resumePreview[data-design="midnight"] > [data-preview-section="experience"] { grid-column: 2; grid-row: 2 / span 2; }
+        #resumePreview[data-design="midnight"] > [data-preview-section="education"] { grid-column: 1; grid-row: 3; margin: 0 0 0 -3.5rem; padding: 2rem; background: #0f172a; color: white; }
+        #resumePreview[data-design="midnight"] > [data-preview-section="education"] p { color: #e2e8f0; }
+        #resumePreview[data-design="midnight"] > [data-preview-section="projects"], #resumePreview[data-design="midnight"] > [data-preview-section="custom"] { grid-column: 1 / -1; }
         @media (max-width: 640px) {
-            #resumePreview[data-design="creative"] { display: block; }
-            #resumePreview[data-design="creative"] > header { margin: -2.5rem -2.5rem 0; padding: 2.5rem; }
+            #resumePreview[data-design="creative"], #resumePreview[data-design="skyline"], #resumePreview[data-design="midnight"] { display: block; }
+            #resumePreview[data-design="creative"] > header, #resumePreview[data-design="skyline"] > header, #resumePreview[data-design="midnight"] > header { margin: -2.5rem -2.5rem 0; padding: 2.5rem; }
+            #resumePreview[data-design="skyline"] > [data-preview-section="skills"], #resumePreview[data-design="skyline"] > [data-preview-section="education"], #resumePreview[data-design="midnight"] > [data-preview-section="skills"], #resumePreview[data-design="midnight"] > [data-preview-section="education"] { margin: 0; }
         }
         @media print {
             body { background: white !important; }
@@ -81,6 +101,16 @@
                         <input class="sr-only" type="radio" name="resumeDesign" value="creative" data-design-tier="pro">
                         <span class="grid h-12 grid-cols-3 overflow-hidden rounded-md border border-slate-200 bg-white"><span class="bg-blue-950"></span><span class="col-span-2 p-2"><span class="block h-1 w-8 bg-blue-600"></span><span class="mt-2 block h-px bg-slate-200"></span></span></span>
                         <span class="mt-2 block text-xs font-black text-blue-950">Creative Split</span><span class="text-[10px] font-bold uppercase text-blue-700">Pro</span>
+                    </label>
+                    <label class="design-option cursor-pointer rounded-xl border border-slate-200 p-3 transition">
+                        <input class="sr-only" type="radio" name="resumeDesign" value="skyline" data-design-tier="starter">
+                        <span class="block h-12 overflow-hidden rounded-md border border-slate-200 bg-white"><span class="block h-3 bg-blue-100"></span><span class="grid h-9 grid-cols-3"><span class="bg-blue-50"></span><span class="col-span-2 p-2"><span class="block h-px bg-blue-300"></span><span class="mt-1 block h-px w-3/4 bg-slate-200"></span></span></span></span>
+                        <span class="mt-2 block text-xs font-black text-blue-950">Skyline Sidebar</span><span class="text-[10px] font-bold uppercase text-amber-700">Starter</span>
+                    </label>
+                    <label class="design-option cursor-pointer rounded-xl border border-slate-200 p-3 transition">
+                        <input class="sr-only" type="radio" name="resumeDesign" value="midnight" data-design-tier="pro">
+                        <span class="grid h-12 grid-cols-3 overflow-hidden rounded-md border border-slate-200 bg-white"><span class="bg-slate-900 p-2"><span class="block h-1 bg-amber-400"></span><span class="mt-2 block h-px bg-slate-500"></span></span><span class="col-span-2 p-2"><span class="block h-1 w-8 bg-slate-800"></span><span class="mt-2 block h-px bg-slate-200"></span></span></span>
+                        <span class="mt-2 block text-xs font-black text-blue-950">Midnight Sidebar</span><span class="text-[10px] font-bold uppercase text-blue-700">Pro</span>
                     </label>
                 </div>
                 <p id="designAccessNote" class="mt-3 text-xs text-slate-500">Two ATS-friendly designs are included free.</p>
