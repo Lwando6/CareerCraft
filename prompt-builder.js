@@ -8,6 +8,7 @@ const access = await getAccess();
     const form = document.getElementById('promptBuilderForm');
     const output = document.getElementById('generatedPrompt');
     const copyButton = document.getElementById('copyGeneratedPrompt');
+    const generateButton = document.getElementById('generateDocumentButton');
     const status = document.getElementById('promptStatus');
     const typeSelect = document.getElementById('promptType');
     if (access.plan === 'free') {
@@ -17,49 +18,95 @@ const access = await getAccess();
                 option.textContent += ' — Starter plan';
             }
         });
-        status.textContent = 'Free includes the tailored CV prompt. Upgrade to Starter for cover letters, LinkedIn summaries, and interview preparation.';
+        status.textContent = 'Free includes the tailored CV prompt. Upgrade to Starter to improve other document prompts and generate finished documents inside CareerCraft.';
+        generateButton.innerHTML = '<i class="fa-solid fa-lock mr-2"></i>Starter plan required to generate documents';
+    }
+    const requestBody = () => ({
+        type: typeSelect.value,
+        role: document.getElementById('targetRole').value.trim(),
+        company: document.getElementById('companyName').value.trim(),
+        experience: document.getElementById('experienceInput').value.trim(),
+        description: document.getElementById('jobDescriptionInput').value.trim(),
+        additionalContext: document.getElementById('additionalContext').value.trim()
+    });
+    async function callApi(body) {
+        const { data: { session } } = await supabase.auth.getSession();
+        const response = await fetch('/api/career-prompt', { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${session?.access_token || ''}` }, body: JSON.stringify(body) });
+        const raw = await response.text();
+        let data;
+        try { data = JSON.parse(raw); } catch { throw new Error('CareerCraft received an invalid server response. Please try again.'); }
+        if (!response.ok) {
+            const error = new Error(data.error || 'The request could not be completed.');
+            error.status = response.status;
+            error.requiredPlan = data.requiredPlan;
+            throw error;
+        }
+        return data;
     }
     form.addEventListener('submit', async event => {
         event.preventDefault();
-        const type = document.getElementById('promptType').value;
-        const role = document.getElementById('targetRole').value.trim();
-        const company = document.getElementById('companyName').value.trim() || 'the employer';
-        const experience = document.getElementById('experienceInput').value.trim();
-        const description = document.getElementById('jobDescriptionInput').value.trim() || 'No job description was supplied. Ask me for missing requirements before making assumptions.';
         const button = form.querySelector('button[type="submit"]');
         button.disabled = true;
-        button.textContent = 'Building…';
-        status.textContent = 'Building your secure prompt…';
-        const { data: { session } } = await supabase.auth.getSession();
+        button.textContent = 'Improving…';
+        status.textContent = 'Gemini is improving your request…';
         try {
-            const response = await fetch('/api/career-prompt', {
-                method: 'POST',
-                headers: { 'content-type': 'application/json', authorization: `Bearer ${session?.access_token || ''}` },
-                body: JSON.stringify({ type, role, company, experience, description })
-            });
-            const data = await response.json();
-            if (!response.ok) {
-                if (response.status === 403) {
-                    status.innerHTML = `${data.error} <a class="font-bold underline" href="pricing.html?required=starter">View plans</a>`;
-                    return;
-                }
-                throw new Error(data.error || 'The prompt could not be created.');
-            }
-            output.textContent = data.prompt;
+            const data = await callApi({ action: 'improve_prompt', ...requestBody() });
+            output.value = data.prompt;
             copyButton.disabled = false;
-            status.textContent = 'Prompt generated. Review it, then copy it into your preferred AI assistant.';
+            generateButton.disabled = access.plan === 'free';
+            status.textContent = access.plan === 'free' ? 'Prompt improved. Upgrade to Starter to generate the document inside CareerCraft.' : 'Prompt improved. Review or edit it, then generate the document.';
         } catch (error) {
-            status.textContent = error.message;
+            if (error.status === 403) status.innerHTML = `${error.message} <a class="font-bold underline" href="pricing.html?required=${error.requiredPlan || 'starter'}">View plans</a>`;
+            else status.textContent = error.message;
         } finally {
             button.disabled = false;
-            button.textContent = 'Build my prompt';
+            button.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Improve my prompt';
         }
     });
     copyButton.addEventListener('click', async () => {
-        try { await navigator.clipboard.writeText(output.textContent); copyButton.textContent = 'Copied ✓'; status.textContent = 'Copied to your clipboard.'; setTimeout(() => copyButton.textContent = 'Copy prompt', 1800); }
+        try { await navigator.clipboard.writeText(output.value); copyButton.textContent = 'Copied ✓'; status.textContent = 'Copied to your clipboard.'; setTimeout(() => copyButton.textContent = 'Copy prompt', 1800); }
         catch (_) { status.textContent = 'Select the generated text and copy it manually.'; }
     });
+    async function generateDocument() {
+        const documentSection = document.getElementById('documentResultSection');
+        const documentOutput = document.getElementById('generatedDocument');
+        const documentStatus = document.getElementById('documentStatus');
+        generateButton.disabled = true;
+        generateButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generating document…';
+        status.textContent = 'Gemini is drafting your document from the improved prompt…';
+        try {
+            const data = await callApi({ action: 'generate_document', ...requestBody(), improvedPrompt: output.value.trim() });
+            documentOutput.value = data.document;
+            documentSection.classList.remove('hidden');
+            documentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            status.textContent = 'Document generated successfully.';
+            documentStatus.textContent = 'Review and edit the result before downloading or submitting it.';
+        } catch (error) {
+            if (error.status === 403) status.innerHTML = `${error.message} <a class="font-bold underline" href="pricing.html?required=${error.requiredPlan || 'starter'}">View plans</a>`;
+            else status.textContent = error.message;
+        } finally {
+            generateButton.disabled = access.plan === 'free';
+            generateButton.innerHTML = '<i class="fa-solid fa-file-circle-check mr-2"></i>Generate the actual document';
+        }
+    }
+    generateButton.addEventListener('click', generateDocument);
+    document.getElementById('regenerateDocument').addEventListener('click', generateDocument);
+    document.getElementById('copyGeneratedDocument').addEventListener('click', async () => {
+        const value = document.getElementById('generatedDocument').value;
+        try { await navigator.clipboard.writeText(value); document.getElementById('documentStatus').textContent = 'Document copied to your clipboard.'; }
+        catch (_) { document.getElementById('documentStatus').textContent = 'Select the document text and copy it manually.'; }
+    });
+    document.getElementById('downloadGeneratedDocument').addEventListener('click', () => {
+        const value = document.getElementById('generatedDocument').value;
+        const filename = `${typeSelect.value || 'career'}-document.txt`;
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([value], { type: 'text/plain;charset=utf-8' }));
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        document.getElementById('documentStatus').textContent = 'Document downloaded.';
+    });
     document.getElementById('clearPrompt').addEventListener('click', () => {
-        form.reset(); output.textContent = 'Complete the form to generate a tailored career prompt.'; copyButton.disabled = true; status.textContent = '';
+        form.reset(); output.value = 'Complete the form to create an improved career prompt.'; copyButton.disabled = true; generateButton.disabled = true; status.textContent = ''; document.getElementById('documentResultSection').classList.add('hidden'); document.getElementById('generatedDocument').value = '';
     });
 })();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CareerCraft - AI Prompt Library</title>
+    <title>CareerCraft - AI Career Document Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,27 +35,49 @@
         </div>
     </header>
 
-    <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+    <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         <div class="mb-10 text-center">
-            <h1 class="text-4xl font-extrabold text-blue-950">Career Prompt Builder</h1>
-            <p class="text-gray-600 text-lg mt-3">Turn your role, experience, and a job advert into a detailed prompt you can copy into your preferred AI assistant.</p>
+            <p class="text-xs font-black uppercase tracking-[.2em] text-amber-600">From details to finished document</p>
+            <h1 class="mt-2 text-4xl font-extrabold text-blue-950">AI Career Document Studio</h1>
+            <p class="mx-auto mt-3 max-w-3xl text-lg text-gray-600">CareerCraft improves your request first, then uses the approved prompt to create an editable, ready-to-use career document.</p>
         </div>
 
-        <div class="grid gap-8 lg:grid-cols-[1fr_1.05fr]">
+        <div class="grid gap-8 lg:grid-cols-[.92fr_1.08fr]">
             <form id="promptBuilderForm" class="space-y-5 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
-                <div><label for="promptType" class="mb-2 block text-sm font-bold text-gray-700">What do you want to create?</label><select id="promptType" class="w-full rounded-xl border border-gray-300 px-4 py-3"><option value="cv">Tailored CV content</option><option value="cover">Cover letter</option><option value="linkedin">LinkedIn summary</option><option value="interview">Interview preparation</option></select></div>
+                <div class="flex items-center gap-3"><span class="grid h-9 w-9 place-items-center rounded-full bg-blue-950 text-sm font-black text-white">1</span><div><h2 class="font-black text-blue-950">Tell us what you need</h2><p class="text-xs text-slate-500">Only include information you can verify.</p></div></div>
+                <div><label for="promptType" class="mb-2 block text-sm font-bold text-gray-700">Document type</label><select id="promptType" class="w-full rounded-xl border border-gray-300 px-4 py-3"><option value="cv">Tailored resume / CV</option><option value="cover">Cover letter</option><option value="linkedin">LinkedIn headline and About section</option><option value="interview">Interview preparation guide</option><option value="bio">Professional biography</option><option value="email">Professional application email</option></select></div>
                 <div class="grid gap-4 sm:grid-cols-2"><div><label for="targetRole" class="mb-2 block text-sm font-bold text-gray-700">Target role</label><input id="targetRole" required class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="Network Support Intern"></div><div><label for="companyName" class="mb-2 block text-sm font-bold text-gray-700">Company</label><input id="companyName" class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="Company name"></div></div>
                 <div><label for="experienceInput" class="mb-2 block text-sm font-bold text-gray-700">Your relevant experience and skills</label><textarea id="experienceInput" required rows="5" class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="CCNA coursework, Packet Tracer, Wireshark, customer support…"></textarea></div>
                 <div><label for="jobDescriptionInput" class="mb-2 block text-sm font-bold text-gray-700">Job description</label><textarea id="jobDescriptionInput" rows="6" class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="Paste the vacancy requirements here for better tailoring."></textarea></div>
-                <button class="w-full rounded-xl bg-blue-950 px-5 py-3.5 font-bold text-white hover:bg-blue-900">Build my prompt</button>
+                <div><label for="additionalContext" class="mb-2 block text-sm font-bold text-gray-700">Additional details or preferences <span class="font-normal text-gray-500">(optional)</span></label><textarea id="additionalContext" rows="4" class="w-full rounded-xl border border-gray-300 px-4 py-3" placeholder="Qualifications, achievements, contact details, preferred tone, length, or anything the document must include."></textarea></div>
+                <button type="submit" class="w-full rounded-xl bg-blue-950 px-5 py-3.5 font-bold text-white hover:bg-blue-900"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Improve my prompt</button>
             </form>
             <section class="h-fit rounded-2xl bg-blue-950 p-6 text-white shadow-xl sm:p-8" aria-labelledby="generatedPromptHeading">
-                <p class="text-xs font-bold uppercase tracking-[.18em] text-amber-400">Generated for you</p><h2 id="generatedPromptHeading" class="mt-2 text-2xl font-extrabold">Your ready-to-use prompt</h2>
-                <pre id="generatedPrompt" class="mt-5 min-h-72 whitespace-pre-wrap rounded-xl border border-white/10 bg-white/10 p-5 font-sans text-sm leading-6 text-blue-50">Complete the form to generate a tailored career prompt.</pre>
+                <div class="flex items-center gap-3"><span class="grid h-9 w-9 place-items-center rounded-full bg-amber-400 text-sm font-black text-blue-950">2</span><div><p class="text-xs font-bold uppercase tracking-[.18em] text-amber-400">Improved by AI</p><h2 id="generatedPromptHeading" class="text-2xl font-extrabold">Review your prompt</h2></div></div>
+                <p class="mt-4 text-sm leading-6 text-blue-100">Review or edit the improved instructions before generating your document.</p>
+                <textarea id="generatedPrompt" class="mt-5 min-h-80 w-full resize-y rounded-xl border border-white/10 bg-white/10 p-5 font-sans text-sm leading-6 text-blue-50" aria-label="Improved prompt">Complete the form to create an improved career prompt.</textarea>
                 <div class="mt-4 flex flex-wrap gap-3"><button id="copyGeneratedPrompt" type="button" disabled class="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-bold text-blue-950 disabled:opacity-50">Copy prompt</button><button id="clearPrompt" type="button" class="rounded-lg border border-white/20 px-5 py-2.5 text-sm font-bold hover:bg-white/10">Clear</button></div>
+                <button id="generateDocumentButton" type="button" disabled class="mt-4 w-full rounded-xl bg-white px-5 py-3.5 font-black text-blue-950 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"><i class="fa-solid fa-file-circle-check mr-2"></i>Generate the actual document</button>
                 <p id="promptStatus" class="mt-3 text-sm text-blue-200" role="status" aria-live="polite"></p>
             </section>
         </div>
+
+        <section id="documentResultSection" class="mt-8 hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="documentResultHeading">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div class="flex items-center gap-3"><span class="grid h-9 w-9 place-items-center rounded-full bg-emerald-600 text-sm font-black text-white">3</span><div><p class="text-xs font-black uppercase tracking-[.18em] text-emerald-700">Document ready</p><h2 id="documentResultHeading" class="text-2xl font-extrabold text-blue-950">Your generated document</h2></div></div>
+                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black uppercase text-amber-800">Starter &amp; Pro</span>
+            </div>
+            <p class="mt-4 text-sm leading-6 text-slate-600">Edit the document below before using it. Confirm every date, qualification, employer, and achievement.</p>
+            <textarea id="generatedDocument" class="mt-5 min-h-[34rem] w-full resize-y rounded-xl border border-slate-300 bg-slate-50 p-5 font-sans text-sm leading-7 text-slate-800" aria-label="Generated career document"></textarea>
+            <div class="mt-4 flex flex-wrap gap-3">
+                <button id="copyGeneratedDocument" type="button" class="rounded-lg bg-blue-950 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-900"><i class="fa-regular fa-copy mr-2"></i>Copy document</button>
+                <button id="downloadGeneratedDocument" type="button" class="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-bold text-blue-950 hover:bg-amber-400"><i class="fa-solid fa-download mr-2"></i>Download .txt</button>
+                <button id="regenerateDocument" type="button" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-bold text-blue-950 hover:bg-slate-50"><i class="fa-solid fa-rotate mr-2"></i>Regenerate</button>
+            </div>
+            <p id="documentStatus" class="mt-3 text-sm text-slate-600" role="status" aria-live="polite"></p>
+        </section>
+
+        <div class="mt-6 flex gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-950"><i class="fa-solid fa-shield-halved mt-1 text-blue-700"></i><p>Your information is sent securely to CareerCraft’s AI service to create the requested output. Do not enter identity numbers, banking information, passwords, or confidential employer data.</p></div>
     </main>
 
     <footer class="bg-blue-950 text-gray-400 py-8 text-center border-t border-blue-900 mt-auto">
