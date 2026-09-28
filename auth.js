@@ -7,6 +7,7 @@ const supabase = createClient(
 );
 const TEMPLATE_KEY = 'careercraft-selected-template';
 const PLAN_KEY = 'careercraft-selected-plan';
+const PLAN_RANK = { free: 0, starter: 1, pro: 2 };
 
 // Permanently remove records created by the old insecure browser-only login.
 ['careercraft-users', 'careercraft-current-user', 'careercraft-profiles']
@@ -42,6 +43,18 @@ function safeNext(fallback = 'profile.html') {
 async function currentUser() {
     const { data, error } = await supabase.auth.getUser();
     return error ? null : data.user;
+}
+
+async function getEffectivePlan(user) {
+    if (!user) return 'guest';
+    const { data: subscription, error } = await supabase
+        .from('subscriptions')
+        .select('plan_slug,status,current_period_end')
+        .eq('user_id', user.id)
+        .maybeSingle();
+    if (error || subscription?.status !== 'active') return 'free';
+    if (subscription.current_period_end && new Date(subscription.current_period_end).getTime() <= Date.now()) return 'free';
+    return subscription.plan_slug === 'pro' ? 'pro' : subscription.plan_slug === 'starter' ? 'starter' : 'free';
 }
 
 function updateAuthUI(user) {
@@ -150,10 +163,10 @@ async function bindProfile(user) {
         const profile = await loadProfile(user);
         const template = profile.selected_template || readLocal(TEMPLATE_KEY);
         const { data: subscription } = await supabase.from('subscriptions').select('plan_slug,status,current_period_end').eq('user_id', user.id).maybeSingle();
-        const chosenPlan = profile.selected_plan || readLocal(PLAN_KEY);
-        const plan = subscription?.status === 'active'
+        const effectivePlan = await getEffectivePlan(user);
+        const plan = effectivePlan !== 'free'
             ? { name: subscription.plan_slug === 'pro' ? 'Pro' : 'Starter', price: `Active${subscription.current_period_end ? ` until ${new Date(subscription.current_period_end).toLocaleDateString()}` : ''}` }
-            : chosenPlan;
+            : { name: 'Free', price: 'Current access' };
         document.getElementById('profileName').value = profile.full_name;
         document.getElementById('profileEmail').value = profile.email;
         document.getElementById('profileEmail').readOnly = true;
@@ -250,6 +263,20 @@ function updateChecklist(profile, template, plan) {
 function bindSelections(user) {
     document.querySelectorAll('[data-template-card]').forEach((card) => {
         card.querySelector('[data-template-action]')?.addEventListener('click', async () => {
+            const requiredPlan = card.dataset.templateTier || 'free';
+            const currentPlan = await getEffectivePlan(user);
+            if (!user) {
+                writeLocal(TEMPLATE_KEY, {
+                    slug: card.dataset.templateSlug,
+                    name: card.dataset.templateName,
+                    category: card.dataset.templateCategory,
+                    description: card.dataset.templateDescription
+                });
+                return window.location.href = 'signup.html?next=resumes.html&saved=template';
+            }
+            if ((PLAN_RANK[currentPlan] ?? -1) < (PLAN_RANK[requiredPlan] ?? 0)) {
+                return window.location.href = `pricing.html?required=${encodeURIComponent(requiredPlan)}&feature=template`;
+            }
             const value = {
                 slug: card.dataset.templateSlug,
                 name: card.dataset.templateName,
@@ -257,7 +284,6 @@ function bindSelections(user) {
                 description: card.dataset.templateDescription
             };
             writeLocal(TEMPLATE_KEY, value);
-            if (!user) return window.location.href = 'signup.html?next=editor.html&saved=template';
             try {
                 await loadProfile(user);
                 const { error } = await supabase.from('profiles').update({
@@ -306,6 +332,12 @@ async function initialise() {
         );
     }
     updateAuthUI(user);
+    const required = new URLSearchParams(window.location.search).get('required');
+    const selectedPlanPanel = document.getElementById('selectedPlanPanel');
+    if (required && selectedPlanPanel && ['starter', 'pro'].includes(required)) {
+        const label = required === 'pro' ? 'Pro' : 'Starter';
+        selectedPlanPanel.innerHTML = `<div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-center text-sm font-semibold text-amber-900"><i class="fa-solid fa-lock mr-2"></i>The feature you selected requires an active ${label} subscription${required === 'starter' ? ' or higher' : ''}.</div>`;
+    }
     bindLogout();
     bindLogin();
     bindSignup();
@@ -316,5 +348,5 @@ async function initialise() {
 supabase.auth.onAuthStateChange((_event, session) => updateAuthUI(session?.user || null));
 initialise();
 
-window.CareerCraftAuth = { supabase, currentUser };
-export { supabase, currentUser };
+window.CareerCraftAuth = { supabase, currentUser, getEffectivePlan };
+export { supabase, currentUser, getEffectivePlan };

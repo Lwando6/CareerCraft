@@ -1,4 +1,7 @@
 import { supabase } from './auth.js';
+import { requireFeature } from './access-control.js';
+
+await requireFeature('portfolio');
 
 const form = document.getElementById('githubForm');
 const input = document.getElementById('githubUsername');

@@ -1,4 +1,11 @@
 import { supabase } from './auth.js';
+import { getAccess, canUseTemplate } from './access-control.js';
+
+const access = await getAccess();
+if (!access.user) {
+    location.replace('login.html?next=editor.html');
+    await new Promise(() => {});
+}
 
 const form = document.getElementById('resumeForm');
 const status = document.getElementById('editorStatus');
@@ -8,6 +15,30 @@ try { selected = JSON.parse(localStorage.getItem('careercraft-selected-template'
 let templateSlug = params.get('template') || selected?.slug || 'corporate-accountant';
 let resumeId = params.get('id');
 let selectedProjects = [];
+
+function requiredTemplatePlan(slug) {
+    return slug === 'corporate-accountant' ? 'free' : 'starter';
+}
+
+function showUpgradeGate(requiredPlan, feature) {
+    const main = document.querySelector('main');
+    const label = requiredPlan === 'pro' ? 'Pro' : 'Starter';
+    main.innerHTML = `<section class="mx-auto my-16 max-w-2xl rounded-3xl border border-amber-200 bg-white p-10 text-center shadow-xl"><div class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-amber-100 text-2xl text-amber-700"><i class="fa-solid fa-lock"></i></div><p class="mt-6 text-xs font-black uppercase tracking-[.2em] text-amber-700">${label} access</p><h1 class="mt-3 text-3xl font-black text-blue-950">Upgrade to use ${feature}</h1><p class="mt-4 leading-7 text-slate-600">Your CV remains safely stored. Activate the ${label} plan to edit and save this content.</p><a href="pricing.html?required=${requiredPlan}" class="mt-7 inline-flex rounded-xl bg-blue-950 px-6 py-3.5 font-bold text-white">View plans</a></section>`;
+}
+
+function configureEditorTools() {
+    if (access.plan === 'pro') return;
+    document.getElementById('themePicker').value = 'navy';
+    document.getElementById('themePicker').disabled = true;
+    document.getElementById('addCustomSectionButton').disabled = true;
+    document.getElementById('addCustomSectionButton').textContent = 'Pro plan: custom sections';
+    document.getElementById('addCustomSectionButton').classList.add('cursor-not-allowed', 'opacity-60');
+    const projectsToggle = document.querySelector('[data-section-toggle="projects"]');
+    projectsToggle.checked = false;
+    projectsToggle.disabled = true;
+    projectsToggle.closest('label')?.classList.add('text-slate-400');
+    document.getElementById('layoutToolsHeading').insertAdjacentHTML('afterend', '<span class="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-black uppercase text-amber-800">Pro features locked</span>');
+}
 
 function message(text, success = false) {
     status.textContent = text;
@@ -69,6 +100,15 @@ async function initialise() {
         }
         else {
             templateSlug = data.template_slug;
+            if (!canUseTemplate(access.plan, requiredTemplatePlan(templateSlug))) {
+                showUpgradeGate(requiredTemplatePlan(templateSlug), `${templateSlug.replaceAll('-', ' ')} template`);
+                return;
+            }
+            const containsProContent = (Array.isArray(data.content?.projects) && data.content.projects.length) || data.content?.customTitle || data.content?.customContent || (data.content?.theme && data.content.theme !== 'navy');
+            if (access.plan !== 'pro' && containsProContent) {
+                showUpgradeGate('pro', 'advanced CV content');
+                return;
+            }
             selectedProjects = Array.isArray(data.content?.projects) ? data.content.projects.slice(0, 12) : [];
             setTemplateLabel();
             Object.entries(data.content || {}).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value; });
@@ -77,6 +117,10 @@ async function initialise() {
             if (data.content?.customTitle || data.content?.customContent) document.getElementById('customSectionFields').classList.remove('hidden');
         }
     } else {
+        if (!canUseTemplate(access.plan, requiredTemplatePlan(templateSlug))) {
+            showUpgradeGate(requiredTemplatePlan(templateSlug), `${templateSlug.replaceAll('-', ' ')} template`);
+            return;
+        }
         const { data: profile } = await supabase.from('profiles').select('full_name,email,role,location,bio').eq('user_id', user.id).maybeSingle();
         if (profile) {
             form.elements.fullName.value = profile.full_name || '';
@@ -86,6 +130,7 @@ async function initialise() {
             form.elements.summary.value = profile.bio || '';
         }
     }
+    configureEditorTools();
     render();
 }
 

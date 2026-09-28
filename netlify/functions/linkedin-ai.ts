@@ -1,5 +1,5 @@
 import type { Config } from '@netlify/functions';
-import { json, requireUser } from './_shared.ts';
+import { json, requirePlan } from './_shared.ts';
 
 function getProfilePrompt() { return `You are CareerCraft's senior South African LinkedIn strategist and recruiter. Analyse only the supplied profile screenshots and notes. Never invent employment, education, metrics, credentials, endorsements, or testimonials. If evidence is missing, say so. Return valid JSON matching the requested schema. Score transparently and make practical, specific recommendations. Headlines must be under 220 characters. Experience bullets use action + supported metric + result; use [add verified metric] when no metric is supplied. Keywords must be naturally relevant, never stuffing. Include accessibility-conscious visual advice.`; }
 function getPostPrompt() { return `You are CareerCraft's LinkedIn editorial strategist. Use only the supplied photos and event facts. Never identify or name a person unless the user supplied the name and consented to mentioning them. Do not invent outcomes, quotes, attendance figures, awards, or partnerships. Return exactly three distinct posts as valid JSON: story-driven, listicle, and executive thought-leadership. Each needs a strong non-clickbait hook, body, lessons, CTA, relevant restrained hashtags, photo alt-text suggestions, and a short comment version. Use professional South African English and avoid generic AI clichés.`; }
@@ -87,7 +87,7 @@ export default async (request: Request) => {
   let stage = 'authentication';
   const started = Date.now();
   try {
-    await requireUser(request);
+    await requirePlan(request, 'pro');
     if (!apiKey) return json({ error: 'Google Gemini is not configured yet. Please contact CareerCraft support.' }, 503);
     stage = 'request-body';
     const raw = await request.text();
@@ -121,11 +121,12 @@ export default async (request: Request) => {
     const errorType = error instanceof Error ? error.name : 'UnknownError';
     const message = error instanceof Error ? error.message : '';
     const status = error instanceof GeminiRequestError ? error.status : null;
-    const reason = message === 'AUTH_REQUIRED' ? 'AUTH_REQUIRED' : message === 'INCOMPLETE' ? 'INCOMPLETE' : message === 'INVALID_IMAGE' ? 'INVALID_IMAGE' : error instanceof SyntaxError ? 'INVALID_JSON_RESPONSE' : 'UNCLASSIFIED';
+    const reason = message === 'AUTH_REQUIRED' ? 'AUTH_REQUIRED' : message.startsWith('PLAN_REQUIRED:') ? 'PLAN_REQUIRED' : message === 'INCOMPLETE' ? 'INCOMPLETE' : message === 'INVALID_IMAGE' ? 'INVALID_IMAGE' : error instanceof SyntaxError ? 'INVALID_JSON_RESPONSE' : 'UNCLASSIFIED';
     console.error('LinkedIn AI request failed', { reference, stage, provider: 'gemini', errorType, reason, status, elapsedMs: Date.now() - started, configuration: { geminiKeyPresent: Boolean(apiKey), model, supabaseUrlPresent: Boolean(Netlify.env.get('SUPABASE_URL')), supabaseKeyPresent: Boolean(Netlify.env.get('SUPABASE_PUBLISHABLE_KEY')) } });
     if (status === 429) return json({ error: 'CareerCraft has reached Google Gemini’s current usage limit. Please wait and try again.' }, 429);
     if (status === 401 || status === 403) return json({ error: 'Google Gemini access needs attention. Please contact CareerCraft support.' }, 503);
     if (status === 400 || status === 404) return json({ error: 'The configured Gemini model could not process this request. Please contact CareerCraft support.' }, 503);
+    if (message.startsWith('PLAN_REQUIRED:')) return json({ error: 'The LinkedIn AI tools require an active Pro subscription.', requiredPlan: 'pro' }, 403);
     return json({ error: message === 'AUTH_REQUIRED' ? 'Please sign in to use the AI tools.' : `The AI analysis could not be completed. Support reference: ${reference}`, reference }, message === 'AUTH_REQUIRED' ? 401 : 500);
   }
 };

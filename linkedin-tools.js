@@ -1,4 +1,7 @@
 import { supabase } from './auth.js';
+import { requireFeature } from './access-control.js';
+
+await requireFeature('linkedin');
 
 const states = { profile_makeover: { busy: false, result: null }, post_generator: { busy: false, result: null } };
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
