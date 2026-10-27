@@ -1,53 +1,90 @@
-# CareerCraft SA 🚀
+# CareerCraft SA
 
-CareerCraft is a modern, responsive web application built to help South African graduates and technical professionals create ATS-compliant resumes, dynamic online portfolios, and high-impact LinkedIn profiles.
+CareerCraft is a South Africa-first career platform that helps students and graduates maintain one reusable career profile and turn it into recruiter-ready CVs, portfolios, LinkedIn content and application documents.
 
----
+## Live links
 
-## 🌐 Page Structure & Key Features
+- **CareerCraft application:** [careercraft-sa.netlify.app](https://careercraft-sa.netlify.app)
+- **WIL Agile assessment portfolio:** [lwando6.github.io/CareerCraft/wil-assessment/](https://lwando6.github.io/CareerCraft/wil-assessment/)
+- **Assessment evidence folder:** [`wil-assessment/`](wil-assessment/)
 
-* **Homepage (`index.html`)**: Clean landing page highlighting core offerings, corporate trust badges, and primary navigation.
-* **Resume Templates (`resumes.html`)**: Industry-specific CV layouts tailored for Finance, Engineering, Healthcare, Trades, Design, and HR.
-* **Tech CV (`tech-resume.html`)**: Specialized, high-density technical resume template designed for IT, networking, and security specialists.
-* **Live GitHub Portfolio (`portfolio.html`)**: Dynamic project grid powered by the GitHub REST API to fetch and display live repositories automatically.
-* **Pricing & Plans (`pricing.html`)**: Straightforward ZAR pricing tiers with no hidden fees (**R49.00 Starter Pack** and **R100.00 Pro Career Suite**).
-* **AI Prompt Library (`prompts.html`)**: Direct copy-and-paste prompt templates for ATS keyword optimization and targeted cover letters.
-* **LinkedIn Transformations (`linkedin.html`)**: Practical before-and-after examples of optimized recruiter headlines.
-* **Personal Branding (`branding.html`)**: Executive bio writing, digital identity design, and career strategy services.
-* **Mission & Vision (`mission.html`)**: Purpose-driven company mission and vision focused on uplifting South African talent.
+## WIL Assessment 2 portfolio
 
----
+The GitHub portfolio includes the compulsory evidence for the entrepreneurial WIL project:
 
-## 🛠️ Tech Stack
+1. [Agile Project Charter](wil-assessment/docs/agile-project-charter.md)
+2. [User Stories and Tasks](wil-assessment/docs/user-stories-and-tasks.md)
+3. [Product Backlog](wil-assessment/docs/product-backlog.md)
+4. [Sprint Backlog](wil-assessment/docs/sprint-backlog.md)
+5. [Agile Logbook](wil-assessment/docs/agile-logbook.md)
 
-* **Markup:** HTML5
-* **Styling:** Tailwind CSS (via CDN)
-* **Typography:** Inter (Google Fonts)
-* **Icons:** FontAwesome 6
-* **API Integration:** JavaScript Fetch API with GitHub REST API
+The portfolio distinguishes between **Completed**, **In progress**, **Planned** and **Won't yet** work. Repository commits, deployment history and demonstrations provide supporting evidence.
 
----
+## Core product capabilities
 
-## 🚀 Getting Started
+- Account registration, authentication and user profiles
+- Modular CV creation and template selection
+- Saved CVs and reusable career information
+- GitHub project selection for portfolios and CVs
+- AI-assisted LinkedIn profile and post tools
+- Career prompt and document generation workflows
+- Free, Starter and Pro membership journeys
+- Personal branding guidance
 
-1. Clone or download the repository to your local environment.
-2. Ensure all HTML files reside together in the same root directory.
-3. Open `index.html` in any web browser, or run via VS Code **Live Server** for the best development experience.
+## Technology
 
-## ▶️ Run Locally (recommended)
+| Layer | Technology |
+|---|---|
+| Front end | HTML5, Tailwind CSS and JavaScript |
+| Authentication and database | Supabase |
+| AI services | Serverless functions with configured AI provider |
+| Portfolio data | GitHub REST API |
+| Production hosting | Netlify |
+| Assessment hosting | GitHub Pages |
 
-The project is a static multi-page site. Start a local static server from the project root and open the site at http://localhost:5500.
+## Run locally
 
-Run with Python (works on Windows/macOS/Linux):
+Clone the repository and serve the project root with a local static server:
 
 ```bash
+git clone https://github.com/Lwando6/CareerCraft.git
+cd CareerCraft
 python -m http.server 5500
 ```
 
-In VS Code you can instead:
+Open `http://localhost:5500` for the application or `http://localhost:5500/wil-assessment/` for the assessment portfolio.
 
-- Run the `serve-static-site` task (Terminal → Run Task → `serve-static-site`).
-- Start the `Open CareerCraft in Browser` launch configuration (Run and Debug → `Open CareerCraft in Browser`).
+## Configuration and security
 
-Stop the server with Ctrl+C in the terminal.
+- Do not commit API keys or service-role credentials.
+- Store secrets in the hosting provider's environment variables.
+- Public Supabase browser configuration must use the publishable key and appropriate Row Level Security policies.
+- Payment and membership updates must be verified server-side.
+- AI outputs require user review and must not invent qualifications or achievements.
+
+## Project structure
+
+```text
+CareerCraft/
+├── index.html
+├── profile.html
+├── resumes.html
+├── editor.html
+├── portfolio.html
+├── linkedin.html
+├── prompts.html
+├── netlify/
+│   └── functions/
+├── wil-assessment/
+│   ├── index.html
+│   ├── styles.css
+│   └── docs/
+└── .github/
+    └── workflows/
+        └── pages.yml
+```
+
+## Evidence and limitations
+
+CareerCraft is an evolving entrepreneurial project. Features should be judged against the current repository and live demonstration. Planned functionality is documented as planned rather than presented as completed.
 
